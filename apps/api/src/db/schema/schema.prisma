@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int                @id @default(autoincrement())
+  username          String             @unique
+  firstName         String
+  lastName          String
+  dni               String             @unique
+  email             String             @unique
+  password          String
+  balance           Decimal            @default(0)
+  createdAt         DateTime           @default(now())
+  deletedAt         DateTime?
+  
+  createdEvents     Event[]            @relation("EventCreator")
+  attendances       Attendance[]
+  purchases         Purchase[]
+}
+
+enum EventCategory {
+  FESTIVAL
+  REUNION_TEMATICA
+  ENCUENTRO_BARRIAL
+  RECITAL
+  CUMPLEANIOS
+  CASAMIENTO
+  OTRO
+}
+
+model Event {
+  id                Int                @id @default(autoincrement())
+  title             String
+  date              DateTime
+  shortDescription  String
+  fullDescription   String
+  location          String
+  isPaid            Boolean            @default(false)
+  price             Decimal?
+  category          EventCategory
+  isCancelled       Boolean            @default(false)
+  creatorId         Int
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  creator           User               @relation("EventCreator", fields: [creatorId], references: [id])
+  attendances       Attendance[]
+  purchases         Purchase[]
+  
+  @@index([category])
+  @@index([isPaid])
+  @@index([date])
+}
+
+model Attendance {
+  id                Int                @id @default(autoincrement())
+  userId            Int
+  eventId           Int
+  confirmedAt       DateTime           @default(now())
+  
+  user              User               @relation(fields: [userId], references: [id])
+  event             Event              @relation(fields: [eventId], references: [id])
+  
+  @@unique([userId, eventId])
+  @@index([userId])
+  @@index([eventId])
+}
+
+model Purchase {
+  id                Int                @id @default(autoincrement())
+  userId            Int
+  eventId           Int
+  quantity          Int
+  totalAmount       Decimal
+  purchasedAt       DateTime           @default(now())
+  
+  user              User               @relation(fields: [userId], references: [id])
+  event             Event              @relation(fields: [eventId], references: [id])
+  
+  @@index([userId])
+  @@index([eventId])
+}
