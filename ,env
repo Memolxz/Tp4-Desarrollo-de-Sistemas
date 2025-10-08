@@ -1,0 +1,3 @@
+DATABASE_URL="file:../bd"
+JWT_SECRET=a
+JWT_REFRESH_SECRET=asd
