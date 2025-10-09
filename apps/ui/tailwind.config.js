@@ -7,9 +7,10 @@ export default {
   theme: {
     extend: {
       colors: {
-      dominant: "#F5F5F5",
+      dominant: "#F7F7F7",
       secondary: "#FFFFFF",
-      accent: "#7F00FF",
+      accent: "#3E0212",
+      complement: "#386641",
     },
   },
   },

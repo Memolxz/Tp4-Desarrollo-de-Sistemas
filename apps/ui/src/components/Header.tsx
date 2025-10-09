@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 export default function Header() {
     return (
-      <div className="flex items-center justify-center bg-secondary w-full h-[70px]">
+      <div className="flex items-center justify-center bg-secondary w-full h-[70px] border-b border-gray-300">
         <div className="flex items-center w-[90%]">
           <div className="flex justify-center text-center items-center w-1/2">
             <div className="flex justify-center items-center bg-accent h-11 w-11 rounded-2xl">
