@@ -1,5 +1,6 @@
 import Categories from "../components/Categories.tsx";
 import Header from "../components/Header.tsx"
+import HowItWorks from "../components/HowItWorks.tsx";
 import Stats from "../components/Stats.tsx";
 import TopEvents from "../components/TopEvents.tsx";
 export default function Home() {
@@ -11,6 +12,8 @@ export default function Home() {
         <Stats />
         <TopEvents />
         <Categories />
+        <HowItWorks />
+
       </div>
     );
 }

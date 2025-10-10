@@ -11,7 +11,7 @@ export default function TopEvents() {
         </div>
 
         <div className="w-1/3 flex flex-row justify-end items-center">
-          <button className="w-1/2 flex flex-row justify-center items-center bg-accent text-dominant h-9 rounded-2xl">
+          <button className="w-1/2 flex flex-row justify-center items-center bg-pink-500 text-dominant h-9 rounded-2xl">
             <p className="mr-2 text-md font-semibold">Ver todos</p>
             <ArrowRight></ArrowRight>
           </button>
@@ -49,7 +49,7 @@ export default function TopEvents() {
               <div className="flex flex-row justify-center items-center text-start mt-1 w-[90%] mb-3">
                 <h2 className="font-bold text-2xl mt-2 w-1/2 text-start text-green-700">Gratis</h2>
                 <div className="w-1/4"></div>
-                <button className="font-semibold text-md mt-2 w-1/4 text-center bg-accent text-white rounded-2xl h-9">Ver Detalles</button>
+                <button className="font-semibold text-md mt-2 w-1/4 text-center bg-pink-500 text-white rounded-2xl h-9">Ver Detalles</button>
               </div>
             </div>
           </div>
@@ -83,7 +83,7 @@ export default function TopEvents() {
               <div className="flex flex-row justify-center items-center text-start mt-1 w-[90%] mb-3">
                 <h2 className="font-bold text-2xl mt-2 w-1/2 text-start text-green-700">Gratis</h2>
                 <div className="w-1/4"></div>
-                <button className="font-semibold text-md mt-2 w-1/4 text-center bg-accent text-white rounded-2xl h-9">Ver Detalles</button>
+                <button className="font-semibold text-md mt-2 w-1/4 text-center bg-pink-500 text-white rounded-2xl h-9">Ver Detalles</button>
               </div>
             </div>
           </div>
@@ -121,7 +121,7 @@ export default function TopEvents() {
               <div className="flex flex-row justify-center items-center text-start mt-1 w-[90%] mb-3">
                 <h2 className="font-bold text-2xl mt-2 w-1/2 text-start text-green-700">Gratis</h2>
                 <div className="w-1/4"></div>
-                <button className="font-semibold text-md mt-2 w-1/4 text-center bg-accent text-white rounded-2xl h-9">Ver Detalles</button>
+                <button className="font-semibold text-md mt-2 w-1/4 text-center bg-pink-500 text-white rounded-2xl h-9">Ver Detalles</button>
               </div>
             </div>
           </div>
@@ -155,7 +155,7 @@ export default function TopEvents() {
               <div className="flex flex-row justify-center items-center text-start mt-1 w-[90%] mb-3">
                 <h2 className="font-bold text-2xl mt-2 w-1/2 text-start text-green-700">Gratis</h2>
                 <div className="w-1/4"></div>
-                <button className="font-semibold text-md mt-2 w-1/4 text-center bg-accent text-white rounded-2xl h-9">Ver Detalles</button>
+                <button className="font-semibold text-md mt-2 w-1/4 text-center bg-pink-500 text-white rounded-2xl h-9">Ver Detalles</button>
               </div>
             </div>
           </div>
