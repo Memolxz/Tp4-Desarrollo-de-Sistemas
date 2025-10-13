@@ -43,7 +43,7 @@ export class UserService {
     }
   }
 
-  private async getUserById(userId: number) {
+  async getUserById(userId: number) {
     try {
       const user = await db.user.findFirst({
         where: { id: userId, deletedAt: null }
