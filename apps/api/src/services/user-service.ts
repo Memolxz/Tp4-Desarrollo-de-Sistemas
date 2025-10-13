@@ -1,6 +1,5 @@
 import { hash } from 'bcrypt';
 import { Prisma } from '@prisma/client';
-
 import { db } from "../db/db";
 
 interface CreateUserBody {
@@ -13,36 +12,6 @@ interface CreateUserBody {
 }
 
 export class UserService {
-  async getAllUsers() {
-    try {
-      const users = await db.user.findMany({
-        where: { deletedAt: null }
-      });
-
-      return users;
-    } catch (error) {
-      console.error(error);
-      throw new Error("Error al obtener usuarios");
-    }
-  }
-
-  async getUserById(userId: number) {
-    try {
-      const user = await db.user.findFirst({
-        where: { id: userId, deletedAt: null }
-      });
-
-      if (!user) {
-        throw new Error("Usuario no encontrado");
-      }
-
-      return user;
-    } catch (error) {
-      console.error(error);
-      throw new Error("Error al obtener usuario");
-    }
-  }
-
   async createUser(body: CreateUserBody) {
     try {
       const existingUser = await db.user.findFirst({
@@ -59,18 +28,35 @@ export class UserService {
         throw new Error("Usuario, email o DNI ya registrado");
       }
 
+      const hashedPassword = await hash(body.password, 10);
       const newUser = await db.user.create({
         data: {
           ...body,
-          password: await hash(body.password, 10)
+          password: hashedPassword
         }
       });
 
       return newUser;
     } catch (error) {
-      console.error("Error al crear usuario:", body);
-      console.error(error);
-      throw new Error("Error al crear usuario");
+      console.error("Error al crear usuario:", error);
+      throw new Error(error instanceof Error ? error.message : "Error al crear usuario");
+    }
+  }
+
+  private async getUserById(userId: number) {
+    try {
+      const user = await db.user.findFirst({
+        where: { id: userId, deletedAt: null }
+      });
+
+      if (!user) {
+        throw new Error("Usuario no encontrado");
+      }
+
+      return user;
+    } catch (error) {
+      console.error("Error al obtener usuario:", error);
+      throw new Error("Error al obtener usuario");
     }
   }
 
@@ -92,7 +78,7 @@ export class UserService {
 
       return updatedUser;
     } catch (error) {
-      console.error(error);
+      console.error("Error al agregar saldo:", error);
       throw new Error("Error al agregar saldo");
     }
   }
@@ -102,8 +88,35 @@ export class UserService {
       const user = await this.getUserById(userId);
       return { balance: user.balance };
     } catch (error) {
-      console.error(error);
+      console.error("Error al obtener saldo:", error);
       throw new Error("Error al obtener el saldo");
+    }
+  }
+
+  async getUserByUsername(username: string) {
+    try {
+      const user = await db.user.findFirst({
+        where: {
+          username,
+          deletedAt: null
+        },
+        select: {
+          id: true,
+          username: true,
+          firstName: true,
+          lastName: true,
+          createdAt: true
+        }
+      });
+
+      if (!user) {
+        throw new Error("Usuario no encontrado");
+      }
+
+      return user;
+    } catch (error) {
+      console.error("Error al obtener usuario:", error);
+      throw new Error("Usuario no encontrado");
     }
   }
 
@@ -113,10 +126,9 @@ export class UserService {
         where: { id: userId },
         data: { deletedAt: new Date() }
       });
-
       return deletedUser;
     } catch (error) {
-      console.error(error);
+      console.error("Error al eliminar usuario:", error);
       throw new Error("Error al eliminar el usuario");
     }
   }

@@ -46,6 +46,8 @@ model Event {
   category          EventCategory
   isCancelled       Boolean            @default(false)
   creatorId         Int
+  imageData         Bytes?
+  imageMimetype     String?
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   
@@ -81,7 +83,7 @@ model Purchase {
   purchasedAt       DateTime           @default(now())
   
   user              User               @relation(fields: [userId], references: [id])
-  event             Event              @relation(fields: [eventId], references: [id])
+  event              Event              @relation(fields: [eventId], references: [id])
   
   @@index([userId])
   @@index([eventId])
