@@ -1,4 +1,8 @@
 import { MapPin, Calendar, UsersRound, ArrowRight } from "lucide-react";
+import valenImg from "../assets/valen.jpg";
+import luImg from "../assets/lu.jpg";
+import memoImg from "../assets/kia.jpg";
+import balooImg from "../assets/baloo.jpg"
 
 export default function TopEvents() {
   return (
@@ -17,13 +21,12 @@ export default function TopEvents() {
           </button>
         </div>
       </div>
-
-      <div className="border-t border-gray-300 my-10 w-full h-0"></div>
+      <div className="border-t border-gray-300 my-10 w-full h-0"/>
 
       <div className="flex flex-row justify-center items-center w-full">
         {/* Evento1 */}
         <div className="flex flex-col justify-center items-center w-1/2 rounded-2xl border-gray-300 border m-4 bg-white">
-          <div className="flex flex-col justify-center items-center bg-black/65 w-full h-52 rounded-2xl"></div>
+          <img src={ valenImg } alt="valen"  className="flex flex-col justify-center items-center bg-black/65 w-full h-52 rounded-2xl"/>
           <div className="flex flex-col justify-center items-start w-full">
             <h2 className="font-semibold text-xl mt-5 ml-5">Bienvenida Valen!</h2>
             <p className="font-normal text-sm text-black/65 mt-2 mx-5">Lo mejor que le paso a este mundo despues de ser mama UwU.</p>
@@ -57,7 +60,7 @@ export default function TopEvents() {
 
         {/* Evento2 */}
         <div className="flex flex-col justify-center items-center w-1/2 rounded-2xl border-gray-300 border m-4 bg-white">
-          <div className="flex flex-col justify-center items-center bg-black/65 w-full h-52 rounded-2xl"></div>
+          <img src={ luImg } alt="lu"  className="flex flex-col justify-center items-center bg-black/65 w-full h-52 rounded-2xl"/>
           <div className="flex flex-col justify-center items-start w-full">
             <h2 className="font-semibold text-xl mt-5 ml-5">Bienvenida Lu!</h2>
             <p className="font-normal text-sm text-black/65 mt-2 mx-5">Lo mejor que le paso a este mundo despues de ser mama UwU.</p>
@@ -88,14 +91,13 @@ export default function TopEvents() {
             </div>
           </div>
         </div>
-        
       </div>
 
       <div className="flex flex-row justify-center items-center w-full">
 
         {/* Evento3 */}
         <div className="flex flex-col justify-center items-center w-1/2 rounded-2xl border-gray-300 border m-4 bg-white">
-          <div className="flex flex-col justify-center items-center bg-black/65 w-full h-52 rounded-2xl"></div>
+          <img src={ memoImg } alt="memo"  className="flex flex-col justify-center items-center bg-black/65 w-full h-52 rounded-2xl"/>
           <div className="flex flex-col justify-center items-start w-full">
             <h2 className="font-semibold text-xl mt-5 ml-5">Bienvenida Memo!</h2>
             <p className="font-normal text-sm text-black/65 mt-2 mx-5">Lo mejor que le paso a este mundo despues de ser mama UwU.</p>
@@ -126,10 +128,10 @@ export default function TopEvents() {
             </div>
           </div>
         </div>
-        
+
         {/* Evento4 */}
         <div className="flex flex-col justify-center items-center w-1/2 rounded-2xl border-gray-300 border m-4 bg-white">
-          <div className="flex flex-col justify-center items-center bg-black/65 w-full h-52 rounded-2xl"></div>
+          <img src={ balooImg } alt="baloo el mejor"  className="flex flex-col justify-center items-center bg-black/65 w-full h-52 rounded-2xl"/>
           <div className="flex flex-col justify-center items-start w-full">
             <h2 className="font-semibold text-xl mt-5 ml-5">Bienvenido Baloo!</h2>
             <p className="font-normal text-sm text-black/65 mt-2 mx-5">Lo mejor que le paso a este mundo despues de ser mama UwU.</p>
