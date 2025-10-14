@@ -20,6 +20,7 @@ interface EventFilters {
 }
 
 export class EventService {
+  
   async getAllEvents(filters?: EventFilters) {
     try {
       const where: any = {
@@ -63,10 +64,15 @@ export class EventService {
         orderBy: { date: 'asc' }
       });
 
-      return events;
+      return events.map(event => ({
+        ...event,
+        hasImage: !!event.imageData,
+        imageUrl: event.imageData ? `/events/${event.id}/image` : null,
+        imageData: undefined
+      }));
+
     } catch (error) {
-      console.error("Error al obtener eventos:", filters);
-      console.error(error);
+      console.error("Error al obtener eventos:", error);
       throw new Error("Error al obtener los eventos");
     }
   }
@@ -97,22 +103,39 @@ export class EventService {
         throw new Error("Evento no encontrado");
       }
 
-      return event;
+      return {
+        ...event,
+        hasImage: !!event.imageData,
+        imageUrl: event.imageData ? `/events/${event.id}/image` : null,
+        imageData: undefined
+      };
+      
     } catch (error) {
-      console.error(`Error al obtener el evento con ID ${eventId}`);
-      console.error(error);
+      console.error("Error al obtener evento:", error);
       throw new Error("Error al obtener evento");
     }
   }
 
-  async createEvent(data: CreateEventDTO) {
+  async createEvent(data: CreateEventDTO, imageBuffer?: Buffer, imageMimetype?: string) {
     try {
+      const eventDate = new Date(data.date);
+      if (eventDate <= new Date()) {
+        throw new Error("La fecha del evento debe ser en el futuro");
+      }
+
       if (data.isPaid && (!data.price || data.price <= 0)) {
         throw new Error("Los eventos pagos deben tener un precio válido");
       }
 
+      const eventData: any = { ...data };
+
+      if (imageBuffer && imageMimetype) {
+        eventData.imageData = imageBuffer;
+        eventData.imageMimetype = imageMimetype;
+      }
+
       const event = await db.event.create({
-        data: { ...data },
+        data: eventData,
         include: {
           creator: {
             select: {
@@ -125,7 +148,6 @@ export class EventService {
         }
       });
 
-      // Auto-confirmar asistencia si es gratuito
       if (!event.isPaid) {
         await db.attendance.create({
           data: {
@@ -135,17 +157,28 @@ export class EventService {
         });
       }
 
-      return event;
+      return {
+        ...event,
+        hasImage: !!event.imageData,
+        imageUrl: event.imageData ? `/events/${event.id}/image` : null,
+        imageData: undefined
+      };
+
     } catch (error) {
-      console.error("Error al crear evento:", data);
-      console.error(error);
-      throw new Error("Error al crear el evento");
+      console.error("Error al crear evento:", error);
+      throw new Error((error as any).message || "Error al crear el evento");
     }
   }
 
-  async updateEvent(eventId: number, userId: number, data: Partial<CreateEventDTO>) {
+  async updateEvent(eventId: number, userId: number, data: Partial<CreateEventDTO>, imageBuffer?: Buffer, imageMimetype?: string) {
     try {
-      const event = await this.getEventById(eventId);
+      const event = await db.event.findUnique({
+        where: { id: eventId }
+      });
+
+      if (!event) {
+        throw new Error("Evento no encontrado");
+      }
 
       if (event.creatorId !== userId) {
         throw new Error("Solo el creador puede modificar el evento");
@@ -155,22 +188,57 @@ export class EventService {
         throw new Error("No se puede modificar un evento cancelado");
       }
 
+      if (data.date) {
+        const eventDate = new Date(data.date);
+        if (eventDate <= new Date()) {
+          throw new Error("La fecha del evento debe ser en el futuro");
+        }
+      }
+
+      const updateData: any = { ...data };
+
+      if (imageBuffer && imageMimetype) {
+        updateData.imageData = imageBuffer;
+        updateData.imageMimetype = imageMimetype;
+      }
+
       const updatedEvent = await db.event.update({
         where: { id: eventId },
-        data
+        data: updateData,
+        include: {
+          creator: {
+            select: {
+              id: true,
+              username: true,
+              firstName: true,
+              lastName: true
+            }
+          }
+        }
       });
 
-      return updatedEvent;
+      return {
+        ...updatedEvent,
+        hasImage: !!updatedEvent.imageData,
+        imageUrl: updatedEvent.imageData ? `/events/${updatedEvent.id}/image` : null,
+        imageData: undefined
+      };
+
     } catch (error) {
-      console.error(`Error al actualizar evento ${eventId} por usuario ${userId}:`, data);
-      console.error(error);
-      throw new Error("Error al actualizar el evento");
+      console.error("Error al actualizar evento:", error);
+      throw new Error((error as any).message || "Error al actualizar el evento");
     }
   }
 
   async cancelEvent(eventId: number, userId: number) {
     try {
-      const event = await this.getEventById(eventId);
+      const event = await db.event.findUnique({
+        where: { id: eventId }
+      });
+
+      if (!event) {
+        throw new Error("Evento no encontrado");
+      }
 
       if (event.creatorId !== userId) {
         throw new Error("Solo el creador puede cancelar el evento");
@@ -193,16 +261,16 @@ export class EventService {
         }
       }
 
-      const cancelledEvent = await db.event.update({
+      await db.event.update({
         where: { id: eventId },
         data: { isCancelled: true }
       });
 
-      return cancelledEvent;
+      return { ok: true };
+
     } catch (error) {
-      console.error(`Error al cancelar evento ${eventId} por usuario ${userId}`);
-      console.error(error);
-      throw new Error("Error al cancelar el evento");
+      console.error("Error al cancelar evento:", error);
+      throw new Error((error as any).message || "Error al cancelar el evento");
     }
   }
 
@@ -246,16 +314,24 @@ export class EventService {
       ]);
 
       return {
-        freeEvents: attendances.map(a => a.event),
+        freeEvents: attendances.map(a => ({
+          ...a.event,
+          hasImage: !!a.event.imageData,
+          imageUrl: a.event.imageData ? `/events/${a.event.id}/image` : null,
+          imageData: undefined
+        })),
         paidEvents: purchases.map(p => ({
           ...p.event,
           quantity: p.quantity,
-          totalPaid: p.totalAmount
+          totalPaid: p.totalAmount,
+          hasImage: !!p.event.imageData,
+          imageUrl: p.event.imageData ? `/events/${p.event.id}/image` : null,
+          imageData: undefined
         }))
       };
+
     } catch (error) {
-      console.error(`Error al obtener eventos del usuario ${userId}`);
-      console.error(error);
+      console.error("Error al obtener eventos del usuario:", error);
       throw new Error("Error al obtener eventos del usuario");
     }
   }
