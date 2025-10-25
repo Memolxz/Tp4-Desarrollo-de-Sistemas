@@ -1,8 +1,4 @@
 import { MapPin, Calendar, UsersRound, ArrowRight } from "lucide-react";
-import valenImg from "../assets/valen.jpg";
-import luImg from "../assets/lu.jpg";
-import memoImg from "../assets/kia.jpg";
-import balooImg from "../assets/baloo.jpg"
 
 export default function TopEvents() {
   return (
@@ -15,7 +11,7 @@ export default function TopEvents() {
         </div>
 
         <div className="w-1/3 flex flex-row justify-end items-center">
-          <button className="w-1/2 flex flex-row justify-center items-center bg-pink-500 text-dominant h-9 rounded-2xl">
+          <button className="w-1/2 flex flex-row justify-center items-center bg-accent text-dominant h-9 rounded-2xl">
             <p className="mr-2 text-md font-semibold">Ver todos</p>
             <ArrowRight></ArrowRight>
           </button>
@@ -26,7 +22,7 @@ export default function TopEvents() {
       <div className="flex flex-row justify-center items-center w-full">
         {/* Evento1 */}
         <div className="flex flex-col justify-center items-center w-1/2 rounded-2xl border-gray-300 border m-4 bg-white">
-          <img src={ valenImg } alt="valen"  className="flex flex-col justify-center items-center bg-black/65 w-full h-52 rounded-2xl"/>
+          <div className="flex flex-col justify-center items-center bg-complement w-full h-52 rounded-2xl"/>
           <div className="flex flex-col justify-center items-start w-full">
             <h2 className="font-semibold text-xl mt-5 ml-5">Bienvenida Valen!</h2>
             <p className="font-normal text-sm text-black/65 mt-2 mx-5">Lo mejor que le paso a este mundo despues de ser mama UwU.</p>
@@ -52,7 +48,7 @@ export default function TopEvents() {
               <div className="flex flex-row justify-center items-center text-start mt-1 w-[90%] mb-3">
                 <h2 className="font-bold text-2xl mt-2 w-1/2 text-start text-green-700">Gratis</h2>
                 <div className="w-1/4"></div>
-                <button className="font-semibold text-md mt-2 w-1/4 text-center bg-pink-500 text-white rounded-2xl h-9">Ver Detalles</button>
+                <button className="font-semibold text-md mt-2 w-1/4 text-center bg-accent text-white rounded-2xl h-9">Ver Detalles</button>
               </div>
             </div>
           </div>
@@ -60,7 +56,7 @@ export default function TopEvents() {
 
         {/* Evento2 */}
         <div className="flex flex-col justify-center items-center w-1/2 rounded-2xl border-gray-300 border m-4 bg-white">
-          <img src={ luImg } alt="lu"  className="flex flex-col justify-center items-center bg-black/65 w-full h-52 rounded-2xl"/>
+          <div className="flex flex-col justify-center items-center bg-complement w-full h-52 rounded-2xl"/>
           <div className="flex flex-col justify-center items-start w-full">
             <h2 className="font-semibold text-xl mt-5 ml-5">Bienvenida Lu!</h2>
             <p className="font-normal text-sm text-black/65 mt-2 mx-5">Lo mejor que le paso a este mundo despues de ser mama UwU.</p>
@@ -86,7 +82,7 @@ export default function TopEvents() {
               <div className="flex flex-row justify-center items-center text-start mt-1 w-[90%] mb-3">
                 <h2 className="font-bold text-2xl mt-2 w-1/2 text-start text-green-700">Gratis</h2>
                 <div className="w-1/4"></div>
-                <button className="font-semibold text-md mt-2 w-1/4 text-center bg-pink-500 text-white rounded-2xl h-9">Ver Detalles</button>
+                <button className="font-semibold text-md mt-2 w-1/4 text-center bg-accent text-white rounded-2xl h-9">Ver Detalles</button>
               </div>
             </div>
           </div>
@@ -97,7 +93,7 @@ export default function TopEvents() {
 
         {/* Evento3 */}
         <div className="flex flex-col justify-center items-center w-1/2 rounded-2xl border-gray-300 border m-4 bg-white">
-          <img src={ memoImg } alt="memo"  className="flex flex-col justify-center items-center bg-black/65 w-full h-52 rounded-2xl"/>
+          <div className="flex flex-col justify-center items-center bg-complement w-full h-52 rounded-2xl"/>
           <div className="flex flex-col justify-center items-start w-full">
             <h2 className="font-semibold text-xl mt-5 ml-5">Bienvenida Memo!</h2>
             <p className="font-normal text-sm text-black/65 mt-2 mx-5">Lo mejor que le paso a este mundo despues de ser mama UwU.</p>
@@ -123,7 +119,7 @@ export default function TopEvents() {
               <div className="flex flex-row justify-center items-center text-start mt-1 w-[90%] mb-3">
                 <h2 className="font-bold text-2xl mt-2 w-1/2 text-start text-green-700">Gratis</h2>
                 <div className="w-1/4"></div>
-                <button className="font-semibold text-md mt-2 w-1/4 text-center bg-pink-500 text-white rounded-2xl h-9">Ver Detalles</button>
+                <button className="font-semibold text-md mt-2 w-1/4 text-center bg-accent text-white rounded-2xl h-9">Ver Detalles</button>
               </div>
             </div>
           </div>
@@ -131,7 +127,7 @@ export default function TopEvents() {
 
         {/* Evento4 */}
         <div className="flex flex-col justify-center items-center w-1/2 rounded-2xl border-gray-300 border m-4 bg-white">
-          <img src={ balooImg } alt="baloo el mejor"  className="flex flex-col justify-center items-center bg-black/65 w-full h-52 rounded-2xl"/>
+          <div className="flex flex-col justify-center items-center bg-complement w-full h-52 rounded-2xl"/>
           <div className="flex flex-col justify-center items-start w-full">
             <h2 className="font-semibold text-xl mt-5 ml-5">Bienvenido Baloo!</h2>
             <p className="font-normal text-sm text-black/65 mt-2 mx-5">Lo mejor que le paso a este mundo despues de ser mama UwU.</p>
@@ -157,7 +153,7 @@ export default function TopEvents() {
               <div className="flex flex-row justify-center items-center text-start mt-1 w-[90%] mb-3">
                 <h2 className="font-bold text-2xl mt-2 w-1/2 text-start text-green-700">Gratis</h2>
                 <div className="w-1/4"></div>
-                <button className="font-semibold text-md mt-2 w-1/4 text-center bg-pink-500 text-white rounded-2xl h-9">Ver Detalles</button>
+                <button className="font-semibold text-md mt-2 w-1/4 text-center bg-accent text-white rounded-2xl h-9">Ver Detalles</button>
               </div>
             </div>
           </div>

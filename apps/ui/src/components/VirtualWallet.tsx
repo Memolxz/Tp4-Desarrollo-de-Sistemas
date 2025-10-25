@@ -1,7 +1,7 @@
 import { Wallet, DollarSign, CreditCard } from "lucide-react"
 export default function VirtualWallet() {
   return (
-    <div className="flex flex-col justify-start items-start bg-[url('/creditcard-banner.jpg')] bg-contain w-[80%] h-56 mt-28 rounded-2xl p-5">
+    <div className="flex flex-col justify-start items-start bg-accent bg-contain w-[80%] h-56 mt-5 rounded-2xl p-5">
       <div className="flex flex-row justify-start items-start w-full">
         <div className="flex flex-row justify-start items-center text-white w-1/2">
           <Wallet className="h-7 w-7" strokeWidth={1.5}/>

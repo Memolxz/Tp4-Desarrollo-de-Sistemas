@@ -56,8 +56,8 @@ export default function Categories() {
           </div>
 
           <div className="w-1/3 h-28 border-gray-300 border rounded-2xl flex justify-center items-center m-4
-                          hover:border-pink-500 hover:scale-105 transition-transform bg-white">
-            <div className="w-12 h-12 bg-pink-200 rounded-2xl flex justify-center items-center text-center">
+                          hover:border-accent hover:scale-105 transition-transform bg-white">
+            <div className="w-12 h-12 bg-complement/30 rounded-2xl flex justify-center items-center text-center">
               <Heart className="w-8 h-8 text-pink-600"/>
             </div>
             <div>
