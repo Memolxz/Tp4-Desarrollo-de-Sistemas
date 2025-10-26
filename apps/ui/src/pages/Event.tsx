@@ -131,8 +131,7 @@ export default function Event() {
           </div>
           <Link
             to="/events"
-            className="px-6 py-2 bg-accent text-white rounded-full hover:bg-darkcolor transition"
-          >
+            className="px-6 py-2 bg-accent text-white rounded-full hover:bg-darkcolor transition">
             Volver a Eventos
           </Link>
         </div>
@@ -144,10 +143,10 @@ export default function Event() {
   return (
     
     <BasePage pageName="event">
-    <div className="flex flex-col justify-center font-geist items-center bg-dominant w-full">
-      <div className="relative flex flex-row justify-between items-between bg-accent/10 w-[90%] rounded-3xl my-5 border border-accent/10">
+    <div className="flex flex-col justify-center font-geist items-center bg-dominant w-full px-10">
+      <div className="relative flex flex-row justify-between items-between bg-accent/10 w-[90%] rounded-3xl border border-accent/10">
         {/* Imagen */}
-        <div className="flex flex-col justify-center items-center bg-white w-1/2 rounded-3xl p-10 relative">
+        <div className="flex flex-col justify-center items-center bg-white w-1/2 rounded-3xl relative">
           <Link to="/events">
             <ChevronLeft className="absolute top-5 left-5 text-accent h-10 w-10 z-10" />
           </Link>
@@ -155,7 +154,7 @@ export default function Event() {
             <p>{categoryDisplayNames[event.category] || event.category}</p>
           </div>
 
-          <div className="flex justify-center items-center h-[380px] w-full">
+          <div className="flex justify-center items-center w-full">
             <img
               src={event.imageUrl || "/placeholder.png"}
               alt={event.title}
@@ -196,8 +195,8 @@ export default function Event() {
             </div>
           )}
           {!event.isPaid && (
-            <p className="text-green-600 font-semibold text-lg mt-3">
-              Evento gratuito
+            <p className="text-accent font-semibold text-lg mt-3">
+              Gratis
             </p>
           )}
 

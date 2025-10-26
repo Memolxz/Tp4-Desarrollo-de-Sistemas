@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { Home } from "lucide-react";
 
 interface LoginResponse {
   ok: boolean;
@@ -60,7 +61,7 @@ function LoginForm() {
 
     return (
         <div className="flex w-full mt-20 flex-col justify-center items-center bg-transparent">
-            <div className="w-1/3">
+            <div className="flex flex-col justify-center items-center w-1/3">
                 <form className="space-y-6" onSubmit={handleSubmit}>
                     <div>
                         <input
@@ -121,6 +122,10 @@ function LoginForm() {
                         ¡Registrate!
                     </Link>
                 </p>
+
+                <Link to="/home" className="text-accent mt-5">
+                    <Home size={40}/>
+                </Link>
             </div>
         </div>
     );

@@ -10,9 +10,9 @@ interface BasePageProps {
 export default function BasePage({ pageName, children }: BasePageProps) {
   return (
     <>
-      <div className="text-geist min-h-screen flex flex-col justify-between bg-dominant">
+      <div className="text-geist min-h-screen flex flex-col justify-between items-center w-full bg-dominant">
         <Header />
-        <main>
+        <main  className="text-geist flex flex-col justify-between items-center w-full bg-dominant">
           {children}
         </main>
         <Footer />

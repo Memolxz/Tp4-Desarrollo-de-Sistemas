@@ -14,7 +14,6 @@ type Event = {
   price: string | null;
   category: string;
   location: string;
-  bodyPart: string;
   isPaid: boolean;
   createdAt: string;
   updatedAt: string;
@@ -103,7 +102,6 @@ export default function Profile() {
       price: "1500",
       category: "Bienestar",
       location: "Playa Grande, Mar del Plata",
-      bodyPart: "Cuerpo completo",
       isPaid: true,
       createdAt: "2025-10-10",
       updatedAt: "2025-10-15",
@@ -119,7 +117,6 @@ export default function Profile() {
       price: "2000",
       category: "Skincare",
       location: "Glow Studio, Palermo",
-      bodyPart: "Rostro",
       isPaid: true,
       createdAt: "2025-10-08",
       updatedAt: "2025-10-10",
@@ -135,7 +132,6 @@ export default function Profile() {
       price: "Gratis",
       category: "Mindfulness",
       location: "Online",
-      bodyPart: "Mente",
       isPaid: false,
       createdAt: "2025-09-25",
       updatedAt: "2025-09-30",
@@ -151,7 +147,6 @@ export default function Profile() {
       price: "3500",
       category: "Belleza",
       location: "Glow Studio, Palermo",
-      bodyPart: "Rostro",
       isPaid: true,
       createdAt: "2025-10-01",
       updatedAt: "2025-10-05",
@@ -167,7 +162,6 @@ export default function Profile() {
       price: "3500",
       category: "Belleza",
       location: "Glow Studio, Palermo",
-      bodyPart: "Rostro",
       isPaid: true,
       createdAt: "2025-10-01",
       updatedAt: "2025-10-05",
