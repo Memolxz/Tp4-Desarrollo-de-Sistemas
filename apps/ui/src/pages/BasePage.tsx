@@ -11,7 +11,7 @@ export default function BasePage({ pageName, children }: BasePageProps) {
   return (
     <>
       <Header />
-      <main>
+      <main className="text-geist">
         {children}
       </main>
       <Footer />
