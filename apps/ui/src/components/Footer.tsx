@@ -16,9 +16,9 @@ export default function Footer() {
     ];
 
     return (
-        <footer className="relative flex justify-between font-geist items-center w-full bg-white h-[140px] border-t border-gray-200 px-6">
+        <footer className="relative flex justify-between font-geist items-center w-full bg-white h-[140px] border-t border-gray-300 px-6">
         
-        <div className="text-darkblue font-bold font-inter text-2xl pl-10 mb-8">
+        <div className="text-accent font-bold font-inter text-2xl pl-10 mb-8">
             MiguEventos
         </div>
 
@@ -32,13 +32,13 @@ export default function Footer() {
             >
                 <div
                 onClick={() => toggle(id)}
-                className="border-darkblue rounded-full border-2 flex items-center justify-center w-8 h-8 cursor-pointer transition-transform duration-300"
+                className="border-accent rounded-full border-2 flex items-center justify-center w-8 h-8 cursor-pointer transition-transform duration-300"
                 >
-                <Icon className="w-5 h-5 text-darkblue" />
+                <Icon className="w-5 h-5 text-accent" />
                 </div>
 
                 {active === id && (
-                <span className="ml-3 text-darkblue text-sm whitespace-nowrap">
+                <span className="ml-3 text-accent text-sm whitespace-nowrap">
                     {text}
                 </span>
                 )}
@@ -47,8 +47,8 @@ export default function Footer() {
         </div>
 
         <div className="absolute bottom-6 left-0 right-0 px-6">
-            <hr className="border-t border-darkblue -mb-2" />
-            <div className="text-center text-darkblue text-xs select-none mt-8">
+            <hr className="border-t border-accent -mb-2" />
+            <div className="text-center text-accent text-xs select-none mt-8">
             &copy; 2025 MiguEventos. Todos los derechos reservados.
             </div>
         </div>

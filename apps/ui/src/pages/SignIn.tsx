@@ -109,7 +109,7 @@ function LoginForm() {
                             type="submit"
                             disabled={loading}
                             className="w-1/2 rounded-full px-4 py-2 font-semibold font-geist
-                            bg-accent hover:bg-[#4B7447] text-white transition">
+                            bg-accent hover:bg-darkcolor text-white transition">
                             {loading ? "Iniciando..." : "Iniciar"}
                         </button>
                     </div>
@@ -117,7 +117,7 @@ function LoginForm() {
 
                 <p className="mt-6 text-center text-sm font-geist text-accent">
                     ¿No tenés cuenta?{' '}
-                    <Link to="/signup" className="font-bold font-geist text-accent hover:text-[#4B7447]">
+                    <Link to="/signup" className="font-bold font-geist text-accent hover:text-darkcolor">
                         ¡Registrate!
                     </Link>
                 </p>
@@ -129,8 +129,8 @@ function LoginForm() {
 export default function LogIn() {
     return (
         <div className="flex flex-col items-center justify-center bg-dominant h-screen w-full font-geist">
-          <h1 className="text-5xl font-bold text-[#4B7447]">Inicia Sesion</h1>
-          <h2 className="mt-7 w-1/2 text-2xl text-center text-[#4B7447]/60">Hace tu cuenta para poder acceder a los mejores eventos!!</h2>
+          <h1 className="text-5xl font-bold text-darkcolor">Inicia Sesion</h1>
+          <h2 className="mt-7 w-1/2 text-2xl text-center text-darkcolor/60">Hace tu cuenta para poder acceder a los mejores eventos!!</h2>
           <LoginForm />
         </div>
     );

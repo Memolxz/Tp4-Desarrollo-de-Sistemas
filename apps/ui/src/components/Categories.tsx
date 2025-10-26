@@ -1,7 +1,7 @@
 import { Music, Heart, BriefcaseBusiness, PartyPopper, GraduationCap, UsersRound } from "lucide-react"
 export default function Categories() {
   return (
-    <div className="bg-transparent w-[80%] mt-28">
+    <div className="bg-transparent w-[80%] mt-20 mb-8">
         <div className="w-full flex flex-col justify-center items-center">
           <h1 className="text-4xl text-center font-bold text-black">Explorar por Categoría</h1>
           <p className="text-2xl text-center font-normal text-black/60 mt-2">Encontrá el evento que más te guste.</p>
@@ -56,8 +56,8 @@ export default function Categories() {
           </div>
 
           <div className="w-1/3 h-28 border-gray-300 border rounded-2xl flex justify-center items-center m-4
-                          hover:border-accent hover:scale-105 transition-transform bg-white">
-            <div className="w-12 h-12 bg-complement/30 rounded-2xl flex justify-center items-center text-center">
+                          hover:border-pink-500 hover:scale-105 transition-transform bg-white">
+            <div className="w-12 h-12 bg-pink-200 rounded-2xl flex justify-center items-center text-center">
               <Heart className="w-8 h-8 text-pink-600"/>
             </div>
             <div>

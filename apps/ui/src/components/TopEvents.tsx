@@ -2,7 +2,7 @@ import { MapPin, Calendar, UsersRound, ArrowRight } from "lucide-react";
 
 export default function TopEvents() {
   return (
-    <div className="bg-transparent w-[80%] mt-20">
+    <div className="bg-transparent w-[80%]  mt-20 mb-8">
       <div className="w-full flex flex-row justify-center">
 
         <div className="w-2/3 flex flex-col justify-center items-start">

@@ -92,7 +92,7 @@ function EventsCarousel({ events }: { events: Event[] }) {
 }
 
 export default function Profile() {
-  // 🟢 Eventos de ejemplo
+  // Eventos hardcodeados
   const events: Event[] = [
     {
       id: 1,

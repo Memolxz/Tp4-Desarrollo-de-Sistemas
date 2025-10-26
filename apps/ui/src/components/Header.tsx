@@ -16,7 +16,7 @@ export default function Header() {
             <div className="flex w-2/3"/>
             <div className="flex items-center justify-center bg-accent rounded-2xl w-1/4 h-9
                             hover:scale-105 transition-transform origin-center">
-              <Link to="/profile" className=" items-end text-white font-bold text-lg">Iniciar Sesión</Link>
+              <Link to="/signin" className=" items-end text-white font-bold text-lg">Iniciar Sesión</Link>
             </div>
           </div>
         </div>

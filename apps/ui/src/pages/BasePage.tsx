@@ -10,11 +10,13 @@ interface BasePageProps {
 export default function BasePage({ pageName, children }: BasePageProps) {
   return (
     <>
-      <Header />
-      <main className="text-geist">
-        {children}
-      </main>
-      <Footer />
+      <div className="text-geist min-h-screen flex flex-col justify-between bg-dominant">
+        <Header />
+        <main>
+          {children}
+        </main>
+        <Footer />
+      </div>
     </>
   );
 }

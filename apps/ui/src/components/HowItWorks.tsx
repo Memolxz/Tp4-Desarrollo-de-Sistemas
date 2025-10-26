@@ -1,9 +1,9 @@
 import { PartyPopper, Calendar, CreditCard, Search } from "lucide-react"
 export default function HowItWorks() {
   return (
-    <div className="bg-transparent w-[80%] mt-28">
+    <div className="bg-transparent w-[80%]  mt-20 mb-8">
         <div className="w-full flex flex-col justify-center items-center">
-          <h1 className="text-4xl text-center font-bold text-black">Cómo Funciona?</h1>
+          <h1 className="text-4xl text-center font-bold text-black">¿Cómo Funciona?</h1>
           <p className="text-2xl text-center font-normal text-black/60 mt-2">Aprendé cómo funciona nuestra página.</p>
         </div>
 
