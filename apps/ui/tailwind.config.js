@@ -9,10 +9,14 @@ export default {
       colors: {
       dominant: "#F7F7F7",
       secondary: "#FFFFFF",
-      accent: "#3E0212",
-      complement: "#386641",
+      accent: "#5B8D56",
+      hovercolor: "#4B7447",
+      complement: "#98C581",
       lightcomplement: "#CDD7C1",
     },
+      fontFamily: {
+        geist: ['"Geist"', 'sans-serif'],
+      },
   },
   },
   plugins: [],

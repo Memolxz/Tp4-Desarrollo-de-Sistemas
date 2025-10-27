@@ -1,0 +1,2 @@
+deberia haber un boton para volver al home en iniciar sesion y registrarse
+en la pagina de evento cuando estas logueado se ve el boton de inscribirse, sino no se ve.

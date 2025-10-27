@@ -1,0 +1,342 @@
+import React, { useState, type JSX } from 'react';
+import { ChevronLeft, ChevronRight, FileText, Calendar, Tag, Upload, X } from 'lucide-react';
+
+const EventCreator: React.FC = () => {
+  const [title, setTitle] = useState<string>('');
+  const [shortDescription, setShortDescription] = useState<string>('');
+  const [detailedDescription, setDetailedDescription] = useState<string>('');
+  const [category, setCategory] = useState<string>('');
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date(2025, 9, 1));
+  const [startTime, setStartTime] = useState<string>('');
+  const [endTime, setEndTime] = useState<string>('');
+  const [image, setImage] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+
+  const categories: string[] = [
+    'Festivales',
+    'Recitales',
+    'Talleres',
+    'Corporativos',
+    'Casamientos',
+    'Reuniones'
+  ];
+
+  const daysInMonth = (date: Date): number => {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  };
+
+  const firstDayOfMonth = (date: Date): number => {
+    return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+  };
+
+  const monthNames: string[] = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ];
+
+  const weekDays: string[] = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'];
+
+  const previousMonth = (): void => {
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
+  };
+
+  const nextMonth = (): void => {
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
+  };
+
+  const selectDate = (day: number): void => {
+    setSelectedDate(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day));
+  };
+
+  const formatDate = (date: Date): string => {
+    const days: string[] = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+    const dayName = days[date.getDay()];
+    const day = date.getDate();
+    const month = monthNames[date.getMonth()].toLowerCase();
+    const year = date.getFullYear();
+    return `${dayName}, ${day} de ${month} de ${year}`;
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = (): void => {
+    setImage(null);
+    setImageFile(null);
+    const input = document.getElementById('image-upload') as HTMLInputElement;
+    if (input) {
+      input.value = '';
+    }
+  };
+
+  const renderCalendar = (): JSX.Element[] => {
+    const days: JSX.Element[] = [];
+    const totalDays = daysInMonth(currentMonth);
+    const firstDay = firstDayOfMonth(currentMonth);
+    
+    for (let i = 0; i < firstDay; i++) {
+      days.push(<div key={`empty-${i}`} className="text-center py-2 text-gray-100"></div>);
+    }
+    
+    for (let day = 1; day <= totalDays; day++) {
+      const isSelected = selectedDate?.getDate() === day && 
+                        selectedDate?.getMonth() === currentMonth.getMonth() &&
+                        selectedDate?.getFullYear() === currentMonth.getFullYear();
+      const isToday = day === 27 && currentMonth.getMonth() === 9;
+      
+      days.push(
+        <div
+          key={day}
+          onClick={() => selectDate(day)}
+          className={`text-center py-2 cursor-pointer rounded-full transition-colors ${
+            isSelected 
+              ? 'bg-accent text-white' 
+              : isToday
+              ? 'bg-gray-100 text-gray-700'
+              : 'hover:bg-gray-100'
+          }`}
+        >
+          {day}
+        </div>
+      );
+    }
+    
+    return days;
+  };
+
+  const handleSubmit = (): void => {
+    console.log({
+      title,
+      shortDescription,
+      detailedDescription,
+      category,
+      selectedDate,
+      startTime,
+      endTime,
+      imageFile
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-8 font-geist">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">Crear Nuevo Evento</h1>
+        <p className="text-gray-600 mb-8">Completa los detalles de tu evento y selecciona la fecha</p>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left Column - Event Information */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center gap-2 mb-6">
+              <FileText className="w-6 h-6" />
+              <h2 className="text-xl font-bold">Información del Evento</h2>
+            </div>
+            
+            <div className="space-y-6">
+              {/* Title */}
+              <div>
+                <label className="block text-md font-bold mb-2">Título del Evento</label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Ej: Conferencia de Tecnología 2025"
+                  className="w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              
+              {/* Short Description */}
+              <div>
+                <label className="block text-md font-bold mb-2">Descripción Corta</label>
+                <textarea
+                  value={shortDescription}
+                  onChange={(e) => setShortDescription(e.target.value.slice(0, 150))}
+                  placeholder="Una breve descripción del evento (máx. 150 caracteres)"
+                  className="w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent resize-none"
+                  rows={3}
+                />
+                <p className="text-sm text-gray-500 mt-1">{shortDescription.length}/150 caracteres</p>
+              </div>
+              
+              {/* Detailed Description */}
+              <div>
+                <label className="block text-md font-bold mb-2">Descripción Detallada</label>
+                <textarea
+                  value={detailedDescription}
+                  onChange={(e) => setDetailedDescription(e.target.value)}
+                  placeholder="Describe tu evento en detalle. Incluye información sobre actividades, ponentes, agenda, etc."
+                  className="w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent resize-none"
+                  rows={5}
+                />
+              </div>
+              
+              {/* Category */}
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Tag className="w-4 h-4" />
+                  <label className="block text-md font-bold">Categoría del Evento</label>
+                </div>
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent bg-white"
+                >
+                  <option value="">Selecciona una categoría</option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Image Upload */}
+              <div>
+                <label className="block text-sm font-bold mb-2">Imagen del Evento</label>
+                {!image ? (
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-500 transition-colors">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                      id="image-upload"
+                    />
+                    <label
+                      htmlFor="image-upload"
+                      className="cursor-pointer flex flex-col items-center"
+                    >
+                      <Upload className="w-12 h-12 text-gray-400 mb-2" />
+                      <span className="text-sm text-gray-600 mb-1">
+                        Haz clic para subir una imagen
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        PNG, JPG o JPEG (máx. 5MB)
+                      </span>
+                    </label>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <img
+                      src={image}
+                      alt="Preview"
+                      className="w-full h-48 object-cover rounded-lg"
+                    />
+                    <button
+                      onClick={removeImage}
+                      className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          {/* Right Column - Date Selection */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center gap-2 mb-6">
+              <Calendar className="w-6 h-6" />
+              <h2 className="text-2xl font-bold">Fecha del Evento</h2>
+            </div>
+            
+            {/* Calendar */}
+            <div className="mb-6">
+              {/* Month Navigation */}
+              <div className="flex items-center justify-between mb-4">
+                <button
+                  onClick={previousMonth}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <span className="font-semibold">
+                  {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+                </span>
+                <button
+                  onClick={nextMonth}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+              
+              {/* Week Days */}
+              <div className="grid grid-cols-7 gap-2 mb-2">
+                {weekDays.map((day) => (
+                  <div key={day} className="text-center text-sm font-semibold text-gray-600">
+                    {day}
+                  </div>
+                ))}
+              </div>
+              
+              {/* Calendar Days */}
+              <div className="grid grid-cols-7 gap-2">
+                {renderCalendar()}
+              </div>
+            </div>
+            
+            {/* Selected Date Display */}
+            <div className="bg-gray-100 rounded-lg p-4 mb-6">
+              <p className="text-sm text-gray-600 mb-1">Fecha seleccionada:</p>
+              <p className="text-lg font-bold text-hovercolor">
+                {selectedDate ? formatDate(selectedDate) : 'No se ha seleccionado ninguna fecha'}
+              </p>
+            </div>
+
+            {/* Time Selection */}
+            <div>
+              <h3 className="text-lg font-bold mb-4">Horario del Evento</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-md font-semibold mb-2 text-gray-700">
+                    Hora de Inicio
+                  </label>
+                  <input
+                    type="time"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-md font-semibold mb-2 text-gray-700">
+                    Hora de Fin
+                  </label>
+                  <input
+                    type="time"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Create Button */}
+        <div className="mt-6">
+          <button
+            onClick={handleSubmit}
+            className="w-full bg-accent hover:bg-gray-100 text-white font-bold py-4 rounded-lg transition-colors"
+          >
+            Crear Evento
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default EventCreator;
