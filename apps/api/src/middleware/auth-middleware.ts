@@ -3,8 +3,14 @@ import { NextFunction, Request, Response } from "express";
 import { User } from '@prisma/client'
 
 // a checkear estoo
-import dotenv from "dotenv";
-dotenv.config();
+declare global {
+  namespace Express {
+    interface Request {
+      user?: User;
+      refreshTokenAttempted?: boolean;
+    }
+  }
+}
 
 
 export const jwtAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
