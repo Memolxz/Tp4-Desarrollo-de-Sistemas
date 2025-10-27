@@ -90,8 +90,6 @@ export class PurchaseService {
                 select: {
                   id: true,
                   username: true,
-                  firstName: true,
-                  lastName: true
                 }
               }
             }

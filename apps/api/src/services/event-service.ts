@@ -50,8 +50,6 @@ export class EventService {
             select: {
               id: true,
               username: true,
-              firstName: true,
-              lastName: true
             }
           },
           _count: {
@@ -86,8 +84,6 @@ export class EventService {
             select: {
               id: true,
               username: true,
-              firstName: true,
-              lastName: true
             }
           },
           _count: {
@@ -141,8 +137,6 @@ export class EventService {
             select: {
               id: true,
               username: true,
-              firstName: true,
-              lastName: true
             }
           }
         }
@@ -210,8 +204,6 @@ export class EventService {
             select: {
               id: true,
               username: true,
-              firstName: true,
-              lastName: true
             }
           }
         }
@@ -286,8 +278,6 @@ export class EventService {
                   select: {
                     id: true,
                     username: true,
-                    firstName: true,
-                    lastName: true
                   }
                 }
               }
@@ -303,8 +293,6 @@ export class EventService {
                   select: {
                     id: true,
                     username: true,
-                    firstName: true,
-                    lastName: true
                   }
                 }
               }

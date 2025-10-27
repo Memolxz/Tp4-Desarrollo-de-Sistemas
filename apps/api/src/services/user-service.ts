@@ -4,8 +4,6 @@ import { db } from "../db/db";
 
 interface CreateUserBody {
   username: string;
-  firstName: string;
-  lastName: string;
   dni: string;
   email: string;
   password: string;
@@ -16,11 +14,7 @@ export class UserService {
     try {
       const existingUser = await db.user.findFirst({
         where: {
-          OR: [
-            { email: body.email },
-            { username: body.username },
-            { dni: body.dni }
-          ]
+          dni: body.dni 
         }
       });
 
@@ -68,6 +62,10 @@ export class UserService {
 
       const user = await this.getUserById(userId);
 
+      if (!user) {
+        throw new Error("Usuario no encontrado");
+      }
+
       const updatedUser = await db.user.update({
         where: { id: userId },
         data: {
@@ -86,7 +84,12 @@ export class UserService {
   async getBalance(userId: number) {
     try {
       const user = await this.getUserById(userId);
-      return { balance: user.balance };
+
+      if (!user) {
+        throw new Error("Usuario no encontrado");
+      }
+
+      return user.balance ;
     } catch (error) {
       console.error("Error al obtener saldo:", error);
       throw new Error("Error al obtener el saldo");
@@ -100,13 +103,6 @@ export class UserService {
           username,
           deletedAt: null
         },
-        select: {
-          id: true,
-          username: true,
-          firstName: true,
-          lastName: true,
-          createdAt: true
-        }
       });
 
       if (!user) {
