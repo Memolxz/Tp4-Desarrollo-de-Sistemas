@@ -10,39 +10,28 @@ export class PurchaseService {
       }
 
       const event = await db.event.findUnique({
-        where: { id: eventId }
+        where: { 
+          id: eventId,
+          isPaid: true,
+          isCancelled: false
+         },
       });
 
       if (!event) {
         throw new Error("Evento no encontrado");
       }
 
-      if (!event.isPaid) {
-        throw new Error("Este evento es gratuito, confirma asistencia en su lugar");
-      }
-
-      if (event.isCancelled) {
-        throw new Error("No se pueden comprar entradas para un evento cancelado");
-      }
-
-      if (!event.price) {
-        throw new Error("El evento no tiene precio configurado");
-      }
-
-      const totalAmount = new Prisma.Decimal(event.price.toString())
-        .times(new Prisma.Decimal(quantity.toString()));
-
       const user = await db.user.findUnique({
-        where: { id: userId }
-      });
+        where: { id: userId },
+      })
 
       if (!user) {
-        throw new Error("Usuario no encontrado");
+        throw new Error("usuario no existe")
       }
 
-      const userBalance = new Prisma.Decimal(user.balance.toString());
+      const totalAmount = Number(event.price) * quantity;
 
-      if (userBalance.lessThan(totalAmount)) {
+      if (Number(user.balance) < totalAmount) {
         throw new Error("Saldo insuficiente");
       }
 
@@ -51,7 +40,7 @@ export class PurchaseService {
         await tx.user.update({
           where: { id: userId },
           data: {
-            balance: userBalance.minus(totalAmount)
+            balance: { decrement: totalAmount }
           }
         });
 
