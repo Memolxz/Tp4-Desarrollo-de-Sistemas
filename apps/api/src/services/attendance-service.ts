@@ -4,20 +4,17 @@ export class AttendanceService {
   async confirmAttendance(userId: number, eventId: number) {
     try {
       const event = await db.event.findUnique({
-        where: { id: eventId }
+        where: { 
+          id: eventId,
+          isPaid: false,
+          isCancelled: false 
+        }
       });
 
       if (!event) {
         throw new Error("Evento no encontrado");
       }
 
-      if (event.isPaid) {
-        throw new Error("Este evento requiere compra de entradas");
-      }
-
-      if (event.isCancelled) {
-        throw new Error("No se puede asistir a un evento cancelado");
-      }
 
       const existing = await db.attendance.findUnique({
         where: {

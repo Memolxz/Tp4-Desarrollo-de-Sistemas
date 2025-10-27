@@ -69,8 +69,7 @@ export class UserService {
       const updatedUser = await db.user.update({
         where: { id: userId },
         data: {
-          balance: new Prisma.Decimal(user.balance.toString())
-            .plus(new Prisma.Decimal(amount.toString()))
+          balance: { increment: amount }
         }
       });
 
