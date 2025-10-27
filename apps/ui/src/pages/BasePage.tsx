@@ -12,7 +12,7 @@ export default function BasePage({ pageName, children }: BasePageProps) {
     <>
       <div className="text-geist min-h-screen flex flex-col justify-between items-center w-full bg-dominant">
         <Header />
-        <main  className="text-geist flex flex-col justify-between items-center w-full bg-dominant">
+        <main  className="text-geist flex flex-col w-full bg-dominant">
           {children}
         </main>
         <Footer />

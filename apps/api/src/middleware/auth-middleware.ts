@@ -2,6 +2,11 @@ import jwt from 'jsonwebtoken'
 import { NextFunction, Request, Response } from "express";
 import { User } from '@prisma/client'
 
+// a checkear estoo
+import dotenv from "dotenv";
+dotenv.config();
+
+
 export const jwtAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
   const token = authHeader?.split(' ')[1];

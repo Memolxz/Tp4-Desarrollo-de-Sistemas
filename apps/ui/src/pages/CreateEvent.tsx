@@ -1,5 +1,6 @@
 import React, { useState, type JSX } from 'react';
 import { ChevronLeft, ChevronRight, FileText, Calendar, Tag, Upload, X } from 'lucide-react';
+import BasePage from './BasePage';
 
 const EventCreator: React.FC = () => {
   const [title, setTitle] = useState<string>('');
@@ -128,15 +129,16 @@ const EventCreator: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8 font-geist">
+    <BasePage pageName="Create Event">
+    <div className="min-h-screen bg-dominant p-8 font-geist">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">Crear Nuevo Evento</h1>
-        <p className="text-gray-600 mb-8">Completa los detalles de tu evento y selecciona la fecha</p>
+        <h1 className="text-4xl font-bold text-accent mb-2">Crear Nuevo Evento</h1>
+        <p className="text-accent/80 mb-8">Completa los detalles de tu evento y selecciona la fecha</p>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left Column - Event Information */}
           <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center gap-2 mb-6">
+            <div className="flex items-center text-accent gap-2 mb-6">
               <FileText className="w-6 h-6" />
               <h2 className="text-xl font-bold">Información del Evento</h2>
             </div>
@@ -144,51 +146,51 @@ const EventCreator: React.FC = () => {
             <div className="space-y-6">
               {/* Title */}
               <div>
-                <label className="block text-md font-bold mb-2">Título del Evento</label>
+                <label className="block text-md text-accent font-bold mb-2">Título del Evento</label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Ej: Conferencia de Tecnología 2025"
-                  className="w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-accent rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               
               {/* Short Description */}
               <div>
-                <label className="block text-md font-bold mb-2">Descripción Corta</label>
+                <label className="block text-md text-accent font-bold mb-2">Descripción Corta</label>
                 <textarea
                   value={shortDescription}
                   onChange={(e) => setShortDescription(e.target.value.slice(0, 150))}
                   placeholder="Una breve descripción del evento (máx. 150 caracteres)"
-                  className="w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent resize-none"
+                  className="w-full px-4 py-2 border border-accent rounded-lg focus:outline-none focus:ring-2 focus:ring-accent resize-none"
                   rows={3}
                 />
-                <p className="text-sm text-gray-500 mt-1">{shortDescription.length}/150 caracteres</p>
+                <p className="text-sm text-accent mt-1">{shortDescription.length}/150 caracteres</p>
               </div>
               
               {/* Detailed Description */}
               <div>
-                <label className="block text-md font-bold mb-2">Descripción Detallada</label>
+                <label className="block text-md text-accent font-bold mb-2">Descripción Detallada</label>
                 <textarea
                   value={detailedDescription}
                   onChange={(e) => setDetailedDescription(e.target.value)}
                   placeholder="Describe tu evento en detalle. Incluye información sobre actividades, ponentes, agenda, etc."
-                  className="w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent resize-none"
+                  className="w-full px-4 py-2 border border-accent rounded-lg focus:outline-none focus:ring-2 focus:ring-accent resize-none"
                   rows={5}
                 />
               </div>
               
               {/* Category */}
               <div>
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2 mb-2 text-accent">
                   <Tag className="w-4 h-4" />
                   <label className="block text-md font-bold">Categoría del Evento</label>
                 </div>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent bg-white"
+                  className="w-full px-4 py-2 border border-accent rounded-lg focus:outline-none focus:ring-2 focus:ring-accent bg-white"
                 >
                   <option value="">Selecciona una categoría</option>
                   {categories.map((cat) => (
@@ -201,9 +203,9 @@ const EventCreator: React.FC = () => {
 
               {/* Image Upload */}
               <div>
-                <label className="block text-sm font-bold mb-2">Imagen del Evento</label>
+                <label className="block text-sm font-bold mb-2 text-accent">Imagen del Evento</label>
                 {!image ? (
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-500 transition-colors">
+                  <div className="border-2 border-dashed border-accent rounded-lg p-8 text-center hover:border-hovercolor transition-colors">
                     <input
                       type="file"
                       accept="image/*"
@@ -215,11 +217,11 @@ const EventCreator: React.FC = () => {
                       htmlFor="image-upload"
                       className="cursor-pointer flex flex-col items-center"
                     >
-                      <Upload className="w-12 h-12 text-gray-400 mb-2" />
-                      <span className="text-sm text-gray-600 mb-1">
+                      <Upload className="w-12 h-12 text-accent mb-2" />
+                      <span className="text-sm text-accent mb-1">
                         Haz clic para subir una imagen
                       </span>
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-accent/80">
                         PNG, JPG o JPEG (máx. 5MB)
                       </span>
                     </label>
@@ -233,7 +235,7 @@ const EventCreator: React.FC = () => {
                     />
                     <button
                       onClick={removeImage}
-                      className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                      className="absolute top-2 right-2 bg-accent text-white p-2 rounded-full hover:bg-hovercolor transition-colors"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -245,7 +247,7 @@ const EventCreator: React.FC = () => {
           
           {/* Right Column - Date Selection */}
           <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center gap-2 mb-6">
+            <div className="flex items-center gap-2 mb-6 text-accent">
               <Calendar className="w-6 h-6" />
               <h2 className="text-2xl font-bold">Fecha del Evento</h2>
             </div>
@@ -253,28 +255,28 @@ const EventCreator: React.FC = () => {
             {/* Calendar */}
             <div className="mb-6">
               {/* Month Navigation */}
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-4 text-accent">
                 <button
                   onClick={previousMonth}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  className="p-2 hover:bg-hovercolor rounded-full transition-colors"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
-                <span className="font-semibold">
+                <span className="font-semibold text-lg">
                   {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
                 </span>
                 <button
                   onClick={nextMonth}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  className="p-2 hover:bg-hovercolor rounded-full transition-colors"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
               </div>
               
               {/* Week Days */}
-              <div className="grid grid-cols-7 gap-2 mb-2">
+              <div className="grid grid-cols-7 bg-accent rounded-full gap-2 mb-2">
                 {weekDays.map((day) => (
-                  <div key={day} className="text-center text-sm font-semibold text-gray-600">
+                  <div key={day} className="text-center text-sm font-semibold text-white">
                     {day}
                   </div>
                 ))}
@@ -288,36 +290,36 @@ const EventCreator: React.FC = () => {
             
             {/* Selected Date Display */}
             <div className="bg-gray-100 rounded-lg p-4 mb-6">
-              <p className="text-sm text-gray-600 mb-1">Fecha seleccionada:</p>
-              <p className="text-lg font-bold text-hovercolor">
+              <p className="text-sm text-accent mb-1">Fecha seleccionada:</p>
+              <p className="text-lg font-bold text-accent">
                 {selectedDate ? formatDate(selectedDate) : 'No se ha seleccionado ninguna fecha'}
               </p>
             </div>
 
             {/* Time Selection */}
             <div>
-              <h3 className="text-lg font-bold mb-4">Horario del Evento</h3>
+              <h3 className="text-lg font-bold mb-4 text-accent">Horario del Evento</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-md font-semibold mb-2 text-gray-700">
+                  <label className="block text-md font-semibold mb-2 text-accent">
                     Hora de Inicio
                   </label>
                   <input
                     type="time"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+                    className="w-full px-4 py-2 border border-accent rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                 </div>
                 <div>
-                  <label className="block text-md font-semibold mb-2 text-gray-700">
+                  <label className="block text-md font-semibold mb-2 text-accent">
                     Hora de Fin
                   </label>
                   <input
                     type="time"
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+                    className="w-full px-4 py-2 border border-accent rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                 </div>
               </div>
@@ -329,13 +331,14 @@ const EventCreator: React.FC = () => {
         <div className="mt-6">
           <button
             onClick={handleSubmit}
-            className="w-full bg-accent hover:bg-gray-100 text-white font-bold py-4 rounded-lg transition-colors"
+            className="w-full bg-accent hover:bg-hovercolor text-xl text-white font-bold py-4 rounded-lg transition-colors"
           >
             Crear Evento
           </button>
         </div>
       </div>
     </div>
+    </BasePage>
   );
 };
 
