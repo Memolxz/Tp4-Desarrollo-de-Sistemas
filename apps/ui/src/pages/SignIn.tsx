@@ -1,15 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import BasePage from "./BasePage";
-
-interface LoginResponse {
-  ok: boolean;
-  data?: {
-    accessToken: string;
-    refreshToken: string;
-  };
-  mensaje?: string;
-}
+import { authService } from "../services/auth-service";
 
 function SignInForm() {
     const navigate = useNavigate();
@@ -33,27 +25,11 @@ function SignInForm() {
         setLoading(true);
         setError("");
         try {
-            const response = await fetch("http://localhost:8000/login", {
-                method: "POST",
-                headers: {
-                "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formData),
-            });
-
-        const data: LoginResponse = await response.json();
-
-        if (response.ok && data.ok && data.data) {
-            localStorage.setItem("accessToken", data.data.accessToken);
-            localStorage.setItem("refreshToken", data.data.refreshToken);
-            
+            await authService.login(formData);
             navigate("/home");
-        } else {
-            setError(data.mensaje || "Error al iniciar sesión");
-        }
-        } catch (error) {
-            console.error("Login error:", error);
-            setError("Error de conexión. Intenta nuevamente.");
+        } catch (error: any) {
+            console.error("Register error:", error);
+            setError(error.message || "Error al crear la cuenta");
         } finally {
             setLoading(false);
         }

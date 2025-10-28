@@ -1,19 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import BasePage from "./BasePage";
+import { authService } from "../services/auth-service";
 
-interface RegisterResponse {
-  ok: boolean;
-  data?: {
-    accessToken: string;
-    refreshToken: string;
-  };
-  mensaje?: string;
-}
 function SignUpForm() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        name: "",
+        username: "",
         email: "",
         password: "",
         dni: "",
@@ -42,27 +35,15 @@ function SignUpForm() {
 
         setLoading(true);
         try {
-            const response = await fetch("http://localhost:8000/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
-            });
-
-            const data: RegisterResponse = await response.json();
-
-            if (response.ok && data.ok && data.data) {
-                localStorage.setItem("accessToken", data.data.accessToken);
-                localStorage.setItem("refreshToken", data.data.refreshToken);
-                navigate("/selection");
-            } else {
-                setError(data.mensaje || "Error al crear la cuenta");
-            }
-        } catch (error) {
+            await authService.register(formData);
+            navigate("/home");
+        } catch (error: any) {
             console.error("Register error:", error);
-            setError("Error de conexión. Intenta nuevamente.");
+            setError(error.message || "Error al crear la cuenta");
         } finally {
             setLoading(false);
         }
+
     };
 
     return (
@@ -71,13 +52,13 @@ function SignUpForm() {
                 <form className="space-y-6" onSubmit={handleSubmit}>
                     <div>
                         <input
-                            id="name"
-                            name="name"
+                            id="username"
+                            name="username"
                             type="text"
                             required
-                            autoComplete="name"
+                            autoComplete="username"
                             placeholder="Nombre Completo"
-                            value={formData.name}
+                            value={formData.username}
                             onChange={handleInputChange}
                             className="block w-full rounded-full bg-white px-10 py-3 text-base text-accent font-geist border-0 placeholder:text-accent focus:outline-none focus:ring-2 focus:ring-accent"
                         />
