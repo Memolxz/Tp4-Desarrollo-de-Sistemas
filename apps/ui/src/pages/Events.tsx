@@ -1,206 +1,155 @@
 import { Calendar, MapPin, SlidersHorizontal, UsersRound, X } from "lucide-react"
 import BasePage from "./BasePage"
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import { useState, useEffect } from "react"
+import { eventService, type Event } from "../services/event-service";
 
-interface Event {
-  id: number;
-  title: string;
-  shortDescription: string;
-  fullDescription: string;
-  imageUrl: string | null;
-  price: string | null;
-  category: string;
-  location: string;
-  isPaid: boolean;
-  createdAt: string;
-  updatedAt: string;
-  date: Date | string | null;
-  attendees: number | string | null;
-  isCancelled: boolean;
-}
+// Mapeo de categorías para mostrar
+const categoryDisplayNames: Record<string, string> = {
+  FESTIVAL: "Festival",
+  REUNION_TEMATICA: "Reunión Temática",
+  ENCUENTRO_BARRIAL: "Encuentro Barrial",
+  RECITAL: "Recital",
+  CUMPLEANIOS: "Cumpleaños",
+  CASAMIENTO: "Casamiento",
+  OTRO: "Otro",
+};
 
-// Datos de ejemplo
-const dummyEvents: Event[] = [
-  {
-    id: 1,
-    title: "Festival de Música Electrónica",
-    shortDescription: "Una noche inolvidable con DJs internacionales.",
-    fullDescription:
-      "Vení a disfrutar del mejor sonido, luces y energía en el festival más grande de la temporada. ¡Line-up sorpresa!",
-    imageUrl:
-      "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80",
-    price: "45",
-    category: "Festival",
-    location: "Buenos Aires, Argentina",
-    isPaid: true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    date: "2025-11-10T21:00:00",
-    attendees: 200,
-    isCancelled: false,
-  },
-  {
-    id: 2,
-    title: "Taller de Fotografía Urbana",
-    shortDescription: "Aprendé técnicas de fotografía callejera con expertos.",
-    fullDescription:
-      "Este taller te enseñará a capturar la esencia de la ciudad con tu cámara o celular. Incluye práctica guiada.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
-    price: "0",
-    category: "Workshop",
-    location: "Córdoba, Argentina",
-    isPaid: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    date: "2025-11-15T15:00:00",
-    attendees: 200,
-    isCancelled: false,
-  },
-  {
-    id: 3,
-    title: "Meditación Guiada Online",
-    shortDescription: "Ideal para reducir el estrés diario.",
-    fullDescription: "Sesión online de 30 minutos para reconectar con tu respiración.",
-    imageUrl: "",
-    price: "Gratis",
-    category: "Mindfulness",
-    location: "Online",
-    isPaid: false,
-    createdAt: "2025-09-25",
-    updatedAt: "2025-09-30",
-    date: "2025-10-30",
-    attendees: 200,
-    isCancelled: false,
-  },
-  {
-    id: 4,
-    title: "Taller de Maquillaje Profesional",
-    shortDescription: "Descubrí técnicas modernas de maquillaje.",
-    fullDescription: "Dictado por expertas con materiales incluidos.",
-    imageUrl: "",
-    price: "3500",
-    category: "Belleza",
-    location: "Glow Studio, Palermo",
-    isPaid: true,
-    createdAt: "2025-10-01",
-    updatedAt: "2025-10-05",
-    date: "2025-11-15",
-    attendees: 200,
-    isCancelled: false,
-  },
-];
+// Mapeo de categorías desde la URL (formato amigable) idk wtf this is
+const urlCategoryMapping: Record<string, string> = {
+  "Festivales": "FESTIVAL",
+  "Festival": "FESTIVAL",
+  "Recital": "RECITAL",
+  "Recitales": "RECITAL",
+  "Cumpleanios": "CUMPLEANIOS",
+  "Cumpleaños": "CUMPLEANIOS",
+  "ReunionesTemáticas": "REUNION_TEMATICA",
+  "Reunión Temática": "REUNION_TEMATICA",
+  "Casamientos": "CASAMIENTO",
+  "Casamiento": "CASAMIENTO",
+  "EncuentrosBarriales": "ENCUENTRO_BARRIAL",
+  "Encuentro Barrial": "ENCUENTRO_BARRIAL",
+  "Otro": "OTRO",
+};
+
 
 export default function EventsPage() {
+  const location = useLocation();
   const [events, setEvents] = useState<Event[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [minPrice, setMinPrice] = useState<number>(0);
-  const [maxPrice, setMaxPrice] = useState<number>(10000);
-  const [minDate, setMinDate] = useState<string>("");
-  const [maxDate, setMaxDate] = useState<string>("");
+  const [isPaid, setIsPaid] = useState<boolean | undefined>(undefined);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  // Categorías disponibles para filtros
-  const categoryDisplayNames: Record<string, string> = {
-    Festival: "Festival",
-    ReunionTematica: "Reunion Tematica",
-    EncuentroBarrial: "Encuentro Barrial",
-    Recital: "Recital",
-    Cumpleaños: "Cumpleaños",
-    Casamiento: "Casamiento",
-    Otro: "Otro",
-  }; 
-  
   useEffect(() => {
-    const fetchEvents = async () => {
-      setLoading(true);
-      try {
-        await new Promise((res) => setTimeout(res, 300));
-        setEvents(dummyEvents);
-        setFilteredEvents(dummyEvents);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchEvents();
   }, []);
 
   useEffect(() => {
-    if (!events.length) return;
-
+    // Aplicar filtros de la URL cuando cambien los eventos
     const params = new URLSearchParams(location.search);
     const categoryParam = params.get("category");
-    if (categoryParam) {
-      setSelectedCategories([categoryParam]);
-      const filtered = events.filter(ev => ev.category === categoryParam);
-      setFilteredEvents(filtered);
-    } else {
+   
+    if (categoryParam && events.length > 0) {
+      // Convertir el parámetro de URL al formato del backend
+      const backendCategory = urlCategoryMapping[categoryParam] || categoryParam;
+      setSelectedCategories([backendCategory]);
+      applyFiltersToEvents([backendCategory], isPaid, searchTerm, events);
+    } else if (events.length > 0) {
       setFilteredEvents(events);
-      setSelectedCategories([]);
     }
   }, [location.search, events]);
 
+  const fetchEvents = async () => {
+    setLoading(true);
+    try {
+      const data = await eventService.getAllEvents();
+      setEvents(data);
+      setFilteredEvents(data);
+    } catch (err) {
+      console.error("Error fetching events:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const applyFiltersToEvents = (
+    categories: string[],
+    paid: boolean | undefined,
+    search: string,
+    eventsToFilter: Event[] = events
+  ) => {
+    let filtered = [...eventsToFilter];
+
+    // Filtrar por categoría
+    if (categories.length > 0) {
+      filtered = filtered.filter((ev) => categories.includes(ev.category));
+    }
+
+    // Filtrar por tipo de pago
+    if (paid !== undefined) {
+      filtered = filtered.filter((ev) => ev.isPaid === paid);
+    }
+
+    // Filtrar por búsqueda
+    if (search.trim()) {
+      const searchLower = search.toLowerCase();
+      filtered = filtered.filter(
+        (ev) =>
+          ev.title.toLowerCase().includes(searchLower) ||
+          ev.shortDescription.toLowerCase().includes(searchLower) ||
+          ev.location.toLowerCase().includes(searchLower)
+      );
+    }
+
+    setFilteredEvents(filtered);
+  };
+
   const toggleCategory = (category: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]
-    );
+    const newCategories = selectedCategories.includes(category)
+      ? selectedCategories.filter((c) => c !== category)
+      : [...selectedCategories, category];
+    setSelectedCategories(newCategories);
   };
 
   const applyFilters = () => {
-    let filtered = [...events];
-
-    // Filtrar por categoría
-    if (selectedCategories.length > 0) {
-      filtered = filtered.filter((ev) => selectedCategories.includes(ev.category));
-    }
-
-    // Filtrar por precio
-    filtered = filtered.filter((ev) => {
-      const priceNum = ev.price ? parseFloat(ev.price) : 0;
-      return priceNum >= minPrice && priceNum <= maxPrice;
-    });
-
-    // Filtrar por fecha
-    filtered = filtered.filter((ev) => {
-      if (!ev.date) return true;
-      const eventDate = new Date(ev.date).getTime();
-      const min = minDate ? new Date(minDate).getTime() : -Infinity;
-      const max = maxDate ? new Date(maxDate).getTime() : Infinity;
-      return eventDate >= min && eventDate <= max;
-    });
-
-    setFilteredEvents(filtered);
+    applyFiltersToEvents(selectedCategories, isPaid, searchTerm);
     setShowFilters(false);
   };
 
   const clearFilters = () => {
     setSelectedCategories([]);
-    setMinPrice(0);
-    setMaxPrice(10000);
-    setMinDate("");
-    setMaxDate("");
+    setIsPaid(undefined);
+    setSearchTerm("");
     setFilteredEvents(events);
   };
 
-  if (loading)
+  if (loading) {
     return (
       <BasePage pageName="events">
-        <div className="flex justify-center items-center py-20 text-accent font-semibold">
-          Cargando eventos...
+        <div className="flex justify-center items-center py-20">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-accent font-semibold text-lg">Cargando eventos...</p>
+          </div>
         </div>
       </BasePage>
     );
+  }
 
   return (
     <BasePage pageName="events">
       <div className="w-full max-w-7xl mx-auto px-4 py-10">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-4xl font-bold text-accent">Eventos</h1>
+          <div>
+            <h1 className="text-4xl font-bold text-accent">Eventos</h1>
+            <p className="text-accent/60 mt-2">
+                {filteredEvents.length} evento{filteredEvents.length !== 1 ? "s" : ""} disponible
+                {filteredEvents.length !== 1 ? "s" : ""}
+            </p>
+          </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
             className="flex items-center gap-2 bg-accent hover:bg-hovercolor text-white px-4 py-2 rounded-full"
@@ -209,6 +158,21 @@ export default function EventsPage() {
             <SlidersHorizontal size={20} />
           </button>
         </div>
+
+        {/* Search Bar */}
+        <div className="mb-6">
+          <input
+            type="text"
+            placeholder="Buscar eventos por nombre, descripción o ubicación..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              applyFiltersToEvents(selectedCategories, isPaid, e.target.value);
+            }}
+            className="w-full px-6 py-3 border-2 border-accent/30 rounded-full focus:border-accent focus:outline-none text-accent"
+          />
+        </div>
+
         <div className="border-b border-accent/60 my-5 w-full"></div>
 
         {/* Modal de filtros */}
@@ -244,44 +208,38 @@ export default function EventsPage() {
                 ))}
               </div>
 
-              {/* Precio */}
-              <h3 className="font-semibold mb-2">Precio</h3>
-              <div className="flex flex-col mb-4">
-                <input
-                  type="range"
-                  min={0}
-                  max={10000}
-                  step={100}
-                  value={maxPrice}
-                  onChange={(e) => setMaxPrice(Number(e.target.value))}
-                  className="w-full h-2 bg-gray-300 rounded-lg appearance-auto accent-accent"
-                />
-                <div className="flex flex-row justify-between">
-                  <div className="flex justify-end mt-1 text-sm text-gray-700">
-                    $0
-                  </div>
-                  <div className="flex justify-end mt-1 text-sm text-gray-700">
-                    ${maxPrice}
-                  </div>
+               {/* Tipo de Evento */}
+              <div className="mb-6">
+                <h3 className="font-semibold mb-3 text-accent text-lg">Tipo de Evento</h3>
+                <div className="flex flex-col gap-2">
+                  <label className="flex items-center gap-2 cursor-pointer hover:bg-accent/5 p-2 rounded-lg transition-colors">
+                    <input
+                      type="radio"
+                      checked={isPaid === undefined}
+                      onChange={() => setIsPaid(undefined)}
+                      className="w-5 h-5 accent-accent cursor-pointer"
+                    />
+                    <span className="text-accent">Todos</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer hover:bg-accent/5 p-2 rounded-lg transition-colors">
+                    <input
+                      type="radio"
+                      checked={isPaid === false}
+                      onChange={() => setIsPaid(false)}
+                      className="w-5 h-5 accent-accent cursor-pointer"
+                    />
+                    <span className="text-accent">Gratuitos</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer hover:bg-accent/5 p-2 rounded-lg transition-colors">
+                    <input
+                      type="radio"
+                      checked={isPaid === true}
+                      onChange={() => setIsPaid(true)}
+                      className="w-5 h-5 accent-accent cursor-pointer"
+                    />
+                    <span className="text-accent">De Pago</span>
+                  </label>
                 </div>
-              </div>
-
-
-              {/* Fecha */}
-              <h3 className="font-semibold mb-2">Fecha</h3>
-              <div className="flex items-center gap-2 mb-4">
-                <input
-                  type="date"
-                  className="border rounded px-2 py-1 w-36"
-                  value={minDate}
-                  onChange={(e) => setMinDate(e.target.value)}
-                />
-                <input
-                  type="date"
-                  className="border rounded px-2 py-1 w-36"
-                  value={maxDate}
-                  onChange={(e) => setMaxDate(e.target.value)}
-                />
               </div>
 
               <div className="flex gap-4 mt-4">
@@ -327,16 +285,24 @@ export default function EventsPage() {
                     <Calendar size={16} strokeWidth={1.5} />
                     <span>{event.date ? new Date(event.date).toLocaleDateString("es-AR") : "-"}</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <UsersRound size={16} strokeWidth={1.5} />
-                    <span>{event.attendees}</span>
-                  </div>
+                  {event._count && (
+                    <div className="flex items-center gap-2">
+                      <UsersRound size={16} strokeWidth={1.5} />
+                      <span>
+                        {event._count.attendances} inscriptos
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="absolute top-5 right-5 flex justify-center bg-accent rounded-full px-3 py-1">
-                  <p className="text-white text-md font-normal">{event.category}</p>
+                  <p className="text-white text-md font-normal">{categoryDisplayNames[event.category] || event.category}</p>
                 </div>
                 <div className="flex justify-between mt-2">
-                  <span className="text-accent text-xl font-semibold">{event.isPaid ? `$${event.price}` : "Gratis"}</span>
+                  <span className="text-accent text-xl font-semibold">
+                    {event.isPaid && event.price
+                      ? `$${parseFloat(event.price.toString()).toLocaleString("es-AR")}`
+                      : "Gratis"}
+                  </span>
                   <span className="bg-accent hover:bg-hovercolor text-white px-3 py-1 rounded-full text-md font-semibold">
                     Ir al Evento
                   </span>

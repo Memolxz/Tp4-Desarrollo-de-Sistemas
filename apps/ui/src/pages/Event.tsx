@@ -1,80 +1,33 @@
-import {
-  ChevronLeft,
-} from "lucide-react";
+import { ChevronLeft, Calendar, MapPin, Users } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import BasePage from "./BasePage";
+import { eventService, type Event } from "../services/event-service";
+import { attendanceService, purchaseService } from "../services/attendance-service";
+import { authService } from "../services/auth-service";
 
-type Event = {
-  id: number;
-  title: string;
-  shortDescription: string;
-  fullDescription: string;
-  imageUrl: string | null;
-  price: string | null;
-  category: string;
-  location: string;
-  isPaid: boolean;
-  createdAt: string;
-  updatedAt: string;
-  date: Date | string | null;
-  isCancelled: boolean;
-};
-
-// Diccionario para traducir categorías
+// Mapeo de categorías
 const categoryDisplayNames: Record<string, string> = {
-  CONCERT: "Concierto",
-  WORKSHOP: "Taller",
-  CONFERENCE: "Conferencia",
   FESTIVAL: "Festival",
-  PARTY: "Fiesta",
+  REUNION_TEMATICA: "Reunión Temática",
+  ENCUENTRO_BARRIAL: "Encuentro Barrial",
+  RECITAL: "Recital",
+  CUMPLEANIOS: "Cumpleaños",
+  CASAMIENTO: "Casamiento",
+  OTRO: "Otro",
 };
-
-// 🔹 Datos hardcodeados para usar mientras no hay backend
-const dummyEvents: Event[] = [
-  {
-    id: 1,
-    title: "Festival de Música Electrónica",
-    shortDescription: "Una noche inolvidable con DJs internacionales.",
-    fullDescription:
-      "Vení a disfrutar del mejor sonido, luces y energía en el festival más grande de la temporada. ¡Line-up sorpresa!",
-    imageUrl:
-      "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80",
-    price: "45",
-    category: "FESTIVAL",
-    location: "Buenos Aires, Argentina",
-    isPaid: true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    date: "2025-11-10T21:00:00",
-    isCancelled: false,
-  },
-  {
-    id: 2,
-    title: "Taller de Fotografía Urbana",
-    shortDescription: "Aprendé técnicas de fotografía callejera con expertos.",
-    fullDescription:
-      "Este taller te enseñará a capturar la esencia de la ciudad con tu cámara o celular. Incluye práctica guiada.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
-    price: "0",
-    category: "WORKSHOP",
-    location: "Córdoba, Argentina",
-    isPaid: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    date: "2025-11-15T15:00:00",
-    isCancelled: false,
-  },
-];
 
 export default function Event() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    setIsAuthenticated(authService.isAuthenticated());
     if (id) {
       fetchEvent();
     }
@@ -82,40 +35,51 @@ export default function Event() {
 
   const fetchEvent = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/events/${id}`);
-
-      if (!response.ok) {
-        console.warn("Backend vacío o error, usando dummy data...");
-        // si falla el fetch, usar evento hardcodeado
-        const fallbackEvent = dummyEvents.find(
-          (ev) => ev.id === parseInt(id!)
-        );
-        if (!fallbackEvent) throw new Error("Evento no encontrado");
-        setEvent(fallbackEvent);
-        return;
-      }
-
-      const json = await response.json();
-      setEvent(json.data);
-    } catch (err) {
+      setLoading(true);
+      const data = await eventService.getEventById(parseInt(id!));
+      setEvent(data);
+    } catch (err: any) {
       console.error("Error fetching event:", err);
-      setError("Error al cargar el evento");
+      setError(err.response?.data?.error || "Error al cargar el evento");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAttendance = async () => {
+    if (!event || !isAuthenticated) return;
+
+    try {
+      setActionLoading(true);
+      setError("");
+
+      if (event.isPaid) {
+        // Si es pago, redirigir a página de pago
+        navigate(`/payment/${event.id}`);
+      } else {
+        // Si es gratis, confirmar asistencia
+        await attendanceService.confirmAttendance(event.id);
+        alert("¡Asistencia confirmada exitosamente!");
+        fetchEvent(); // Refresh event data
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.error || "Error al procesar la inscripción");
+    } finally {
+      setActionLoading(false);
     }
   };
 
   if (loading) {
     return (
       <BasePage pageName="event loading">
-      <div className="min-h-screen flex items-center justify-center bg-dominant">
-        <div className="text-center">
-          <div className="text-xl font-semibold text-accent mb-4">
-            Cargando evento...
+        <div className="min-h-screen flex items-center justify-center bg-dominant">
+          <div className="text-center">
+            <div className="text-xl font-semibold text-accent mb-4">
+              Cargando evento...
+            </div>
+            <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto"></div>
           </div>
-          <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto"></div>
         </div>
-      </div>
       </BasePage>
     );
   }
@@ -123,18 +87,18 @@ export default function Event() {
   if (error || !event) {
     return (
       <BasePage pageName="event error">
-      <div className="flex items-center justify-center bg-dominant">
-        <div className="text-center">
-          <div className="text-xl font-semibold text-red-800 mb-4">
-            {error || "Evento no encontrado"}
+        <div className="flex items-center justify-center bg-dominant min-h-screen">
+          <div className="text-center">
+            <div className="text-xl font-semibold text-red-800 mb-4">
+              {error || "Evento no encontrado"}
+            </div>
+            <Link
+              to="/events"
+              className="px-6 py-2 bg-accent text-white rounded-full hover:bg-hovercolor transition">
+              Volver a Eventos
+            </Link>
           </div>
-          <Link
-            to="/events"
-            className="px-6 py-2 bg-accent text-white rounded-full hover:bg-darkcolor transition">
-            Volver a Eventos
-          </Link>
         </div>
-      </div>
       </BasePage>
     );
   }
@@ -171,7 +135,7 @@ export default function Event() {
             {event.title}
           </h1>
           <p className="text-start text-accent font-normal text-md mr-10 mt-5 mb-5">
-            {event.shortDescription}
+            {event.fullDescription}
           </p>
           <p className="text-start text-accent font-normal text-md mt-5">
             <strong>Ubicación: </strong>
@@ -185,26 +149,65 @@ export default function Event() {
             })}
           </p>
 
-          {event.isPaid && (
-            <div className="flex flex-row items-center mt-3">
-              <p className="text-accent font-semibold text-2xl">
-                $ {parseFloat(event.price || "0").toLocaleString("es-AR")}
+          {event._count && (
+            <div className="flex items-center gap-3 text-accent">
+              <Users className="h-5 w-5" strokeWidth={1.5} />
+              <p className="text-md">
+                <strong>Inscriptos:</strong>{" "}
+                {event._count.attendances}
               </p>
-              <p className="text-accent font-normal text-sm ml-1">USD</p>
             </div>
           )}
-          {!event.isPaid && (
-            <p className="text-accent font-semibold text-lg mt-3">
-              Gratis
+
+          {event.creator && (
+            <p className="text-accent/60 text-sm text-center mt-4">
+              Organizado por <strong>{event.creator.username}</strong>
             </p>
           )}
 
-          <button
-            className="flex flex-row justify-center items-center bg-accent rounded-2xl hover:bg-darkcolor font-semibold w-full h-10 mt-5"
-            onClick={() => alert(`Inscripción al evento "${event.title}"`)}
-          >
-            <p className="text-white">Inscribirse</p>
-          </button>
+          {event.isPaid && event.price ? (
+            <div className="flex items-baseline gap-2 mb-4">
+              <p className="text-accent font-bold text-3xl">
+                ${" "}
+                {parseFloat(event.price.toString()).toLocaleString("es-AR", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </p>
+              <p className="text-accent/60 font-normal text-sm">ARS</p>
+            </div>
+          ) : (
+            <p className="text-accent font-bold text-2xl mb-4">
+              ¡Gratis!
+            </p>
+          )}
+
+          {isAuthenticated ? (
+            <button
+              className="flex flex-row justify-center items-center bg-accent rounded-2xl hover:bg-hovercolor font-semibold w-full h-12 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleAttendance}
+              disabled={actionLoading || event.isCancelled}
+            >
+              <p className="text-white text-lg">
+                {actionLoading
+                  ? "Procesando..."
+                  : event.isCancelled
+                  ? "Evento Cancelado"
+                  : event.isPaid
+                  ? "Comprar Entradas"
+                  : "Confirmar Asistencia"}
+              </p>
+            </button>
+          ) : (
+            <Link
+              to="/signin"
+              className="flex flex-row justify-center items-center bg-accent rounded-2xl hover:bg-hovercolor font-semibold w-full h-12 transition-colors"
+            >
+              <p className="text-white text-lg">
+                Inicia Sesión para Inscribirte
+              </p>
+            </Link>
+          )}
         </div>
       </div>
     </div>
