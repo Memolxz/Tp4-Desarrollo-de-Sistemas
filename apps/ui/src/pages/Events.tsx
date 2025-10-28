@@ -218,7 +218,7 @@ export default function EventsPage() {
             onClick={() => setShowFilters(false)}
           >
             <div
-              className="bg-white p-6 rounded-lg max-w-lg w-[90%]"
+              className="relative bg-white p-6 rounded-lg max-w-lg w-[90%]"
               onClick={(e) => e.stopPropagation()}
             >
               <button
