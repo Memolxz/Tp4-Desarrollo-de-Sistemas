@@ -142,14 +142,12 @@ export class EventService {
         }
       });
 
-      if (!event.isPaid) {
-        await db.attendance.create({
-          data: {
-            userId: data.creatorId,
-            eventId: event.id
-          }
-        });
-      }
+      await db.attendance.create({
+        data: {
+          userId: data.creatorId,
+          eventId: event.id
+        }
+      });
 
       return {
         ...event,
