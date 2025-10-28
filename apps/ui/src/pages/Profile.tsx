@@ -91,6 +91,7 @@ function EventsCarousel({ events }: { events: Event[] }) {
 }
 
 export default function Profile() {
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   // Eventos hardcodeados
   const events: Event[] = [
     {
@@ -179,17 +180,17 @@ export default function Profile() {
             <h2 className="mt-2 w-1/2 text-xl text-start text-black/60">Manejá tus datos y saldo.</h2>
           </div>
           <div className="flex flex-row justify-end items-end bg-transparent w-1/3 h-full mb-4">
-            <button className="flex flex-row justify-center items-center bg-accent rounded-2xl h-10 w-48 text-white text-lg font-semibold">
+            <Link to="/createevent" className="flex flex-row justify-center items-center bg-accent rounded-2xl h-10 w-48 text-white text-lg font-semibold">
               <Plus className="h-6 w-6 mr-2" />
               <p>Crear Evento</p>
-            </button>
+            </Link>
           </div>
         </div>
         <div className="w-[80%] border-b border-gray-300 h-0 my-5 z-10" />
         <div className="flex flex-row justify-center items-end bg-transparent w-[80%] mt-5">
-          <div className='w-full flex flex-row mb-10'>
-              <div className='bg-accent rounded-full h-16 w-16 text-white flex justify-center items-center mr-5'>
-                  <UserRound className='h-9 w-9' strokeWidth={1.5}/>
+          <div className='w-full flex flex-row mb-10 items-center gap-5'>
+              <div className='bg-accent rounded-full h-20 w-20 text-white flex justify-center items-center'>
+                  <UserRound className='h-12 w-12' strokeWidth={1.5}/>
               </div>
               <div className='flex flex-col'>
                   <h2 className="text-4xl font-bold text-accent font-geist">Nombre Completo</h2>
@@ -197,6 +198,7 @@ export default function Profile() {
                       <Mail className="h-4 w-4 text-accent/60 mr-1" />
                       <p className="text-md text-accent/60 font-geist">gmail@gmail.com</p>
                   </div>
+                  <h3 className="text-md italic text-accent/60 font-geist">47807261</h3>
               </div>
           </div>
         </div>
