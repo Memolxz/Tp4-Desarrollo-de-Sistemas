@@ -55,6 +55,10 @@ export class AttendanceService {
         throw new Error("El creador no puede cancelar su asistencia");
       }
 
+      if (event.isPaid) {
+        throw new Error("No se puede cancelar la asistencia a un evento pagado");
+      }
+
       const attendance = await db.attendance.findUnique({
         where: {
           userId_eventId: {
