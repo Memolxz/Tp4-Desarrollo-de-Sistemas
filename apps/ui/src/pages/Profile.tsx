@@ -1,25 +1,10 @@
-import { ChevronLeft, ChevronRight, Mail, Plus, UserRound } from "lucide-react";
+import { ChevronLeft, ChevronRight, Mail, Plus, UserRound, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import BasePage from "./BasePage.tsx";
 import VirtualWallet from "../components/VirtualWallet.tsx";
-import { useState } from "react";
-
-// Types
-type Event = {
-  id: number;
-  title: string;
-  shortDescription: string;
-  fullDescription: string;
-  imageUrl: string | null;
-  price: string | null;
-  category: string;
-  location: string;
-  isPaid: boolean;
-  createdAt: string;
-  updatedAt: string;
-  date: Date | string | null;
-  isCancelled: boolean;
-};
+import { useState, useEffect } from "react";
+import { eventService, type Event } from "../services/event-service";
+import { userService, type User } from "../services/user-service";
 
 function EventsCarousel({ events }: { events: Event[] }) {
   const [index, setIndex] = useState(0);
@@ -91,85 +76,59 @@ function EventsCarousel({ events }: { events: Event[] }) {
 }
 
 export default function Profile() {
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  // Eventos hardcodeados
-  const events: Event[] = [
-    {
-      id: 1,
-      title: "Clase de Yoga al Atardecer",
-      shortDescription: "Una sesión relajante frente al mar.",
-      fullDescription: "Conectá cuerpo y mente en una experiencia única con vista al atardecer.",
-      imageUrl: "",
-      price: "1500",
-      category: "Bienestar",
-      location: "Playa Grande, Mar del Plata",
-      isPaid: true,
-      createdAt: "2025-10-10",
-      updatedAt: "2025-10-15",
-      date: "2025-11-05",
-      isCancelled: false,
-    },
-    {
-      id: 2,
-      title: "Workshop de Skincare Natural",
-      shortDescription: "Aprendé a cuidar tu piel con productos naturales.",
-      fullDescription: "Taller práctico con demostraciones en vivo y recetas caseras.",
-      imageUrl: "",
-      price: "2000",
-      category: "Skincare",
-      location: "Glow Studio, Palermo",
-      isPaid: true,
-      createdAt: "2025-10-08",
-      updatedAt: "2025-10-10",
-      date: "2025-11-10",
-      isCancelled: false,
-    },
-    {
-      id: 3,
-      title: "Meditación Guiada Online",
-      shortDescription: "Ideal para reducir el estrés diario.",
-      fullDescription: "Sesión online de 30 minutos para reconectar con tu respiración.",
-      imageUrl: "",
-      price: "Gratis",
-      category: "Mindfulness",
-      location: "Online",
-      isPaid: false,
-      createdAt: "2025-09-25",
-      updatedAt: "2025-09-30",
-      date: "2025-10-30",
-      isCancelled: false,
-    },
-    {
-      id: 4,
-      title: "Taller de Maquillaje Profesional",
-      shortDescription: "Descubrí técnicas modernas de maquillaje.",
-      fullDescription: "Dictado por expertas con materiales incluidos.",
-      imageUrl: "",
-      price: "3500",
-      category: "Belleza",
-      location: "Glow Studio, Palermo",
-      isPaid: true,
-      createdAt: "2025-10-01",
-      updatedAt: "2025-10-05",
-      date: "2025-11-15",
-      isCancelled: false,
-    },
-    {
-      id: 5,
-      title: "Taller de Maquillaje Profesional",
-      shortDescription: "Descubrí técnicas modernas de maquillaje.",
-      fullDescription: "Dictado por expertas con materiales incluidos.",
-      imageUrl: "",
-      price: "3500",
-      category: "Belleza",
-      location: "Glow Studio, Palermo",
-      isPaid: true,
-      createdAt: "2025-10-01",
-      updatedAt: "2025-10-05",
-      date: "2025-11-15",
-      isCancelled: false,
-    },
-  ];
+  const [user, setUser] = useState<User | null>(null);
+  const [userEvents, setUserEvents] = useState<{ Events: Event[] }>({
+    Events: []
+  });
+  const [userAttendances, setUserAttendances] = useState<{ Attendances: Event[] }>({
+    Attendances: []
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const fetchUserData = async () => {
+    try {
+      setLoading(true);
+      const [userData, eventsData, attendancesData] = await Promise.all([
+        userService.getProfile(),
+        eventService.getUserEvents(),
+        eventService.getUserAttendances()
+      ]);
+      setUser(userData);
+      setUserEvents(eventsData);
+      setUserAttendances(attendancesData);
+    } catch (err) {
+      console.error("Error fetching user data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <BasePage pageName="profile">
+        <div className="flex justify-center items-center min-h-screen bg-dominant">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="w-12 h-12 text-accent animate-spin" />
+            <p className="text-accent font-semibold">Cargando perfil...</p>
+          </div>
+        </div>
+      </BasePage>
+    );
+  }
+
+  if (!user) {
+    return (
+      <BasePage pageName="profile">
+        <div className="flex justify-center items-center min-h-screen bg-dominant">
+          <p className="text-red-600 font-semibold">Error al cargar el perfil</p>
+        </div>
+      </BasePage>
+    );
+  }
 
   return (
     <BasePage pageName={"profile"}>
@@ -186,6 +145,7 @@ export default function Profile() {
             </Link>
           </div>
         </div>
+
         <div className="w-[80%] border-b border-gray-300 h-0 my-5 z-10" />
         <div className="flex flex-row justify-center items-end bg-transparent w-[80%] mt-5">
           <div className='w-full flex flex-row mb-10 items-center gap-5'>
@@ -193,16 +153,16 @@ export default function Profile() {
                   <UserRound className='h-12 w-12' strokeWidth={1.5}/>
               </div>
               <div className='flex flex-col'>
-                  <h2 className="text-4xl font-bold text-accent font-geist">Nombre Completo</h2>
+                  <h2 className="text-4xl font-bold text-accent font-geist">{user.username}</h2>
                   <div className='w-full flex flex-row justify-start items-center'>
                       <Mail className="h-4 w-4 text-accent/60 mr-1" />
-                      <p className="text-md text-accent/60 font-geist">gmail@gmail.com</p>
+                      <p className="text-md text-accent/60 font-geist">{user.email}</p>
                   </div>
-                  <h3 className="text-md italic text-accent/60 font-geist">47807261</h3>
+                  <h3 className="text-md italic text-accent/60 font-geist">DNI: {user.dni}</h3>
               </div>
           </div>
         </div>
-        <VirtualWallet />
+        <VirtualWallet balance={parseFloat(user.balance.toString())} userId={user.id} onBalanceUpdate={fetchUserData} />
 
         {/* Mis Eventos */}
         <div className="flex flex-row justify-center items-end bg-transparent w-[80%]">
@@ -212,7 +172,7 @@ export default function Profile() {
         </div>
         <div className="w-[80%] border-b border-gray-300 h-0 my-5 z-10" />
         <div className="w-[80%]" >
-          <EventsCarousel events={events} />
+          <EventsCarousel events={userEvents.Events} />
         </div>
 
         {/* Mis Inscripciones */}
@@ -223,7 +183,7 @@ export default function Profile() {
         </div>
         <div className="w-[80%] border-b border-gray-300 h-0 my-5 z-10" />
         <div className="w-[80%]" >
-          <EventsCarousel events={events} />
+          <EventsCarousel events={userAttendances.Attendances} />
         </div>
       </div>
     </BasePage>

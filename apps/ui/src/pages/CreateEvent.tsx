@@ -1,26 +1,34 @@
 import React, { useState, type JSX } from 'react';
 import { ChevronLeft, ChevronRight, FileText, Calendar, Tag, Upload, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import BasePage from './BasePage';
+import { eventService } from '../services/event-service';
 
 const EventCreator: React.FC = () => {
+  const navigate = useNavigate();
   const [title, setTitle] = useState<string>('');
+  const [location, setLocation] = useState<string>('');
   const [shortDescription, setShortDescription] = useState<string>('');
   const [detailedDescription, setDetailedDescription] = useState<string>('');
   const [category, setCategory] = useState<string>('');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [currentMonth, setCurrentMonth] = useState<Date>(new Date(2025, 9, 1));
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [startTime, setStartTime] = useState<string>('');
-  const [endTime, setEndTime] = useState<string>('');
+  const [isPaid, setIsPaid] = useState<boolean>(false);
+  const [price, setPrice] = useState<string>('');
   const [image, setImage] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>('');
 
-  const categories: string[] = [
-    'Festivales',
-    'Recitales',
-    'Talleres',
-    'Corporativos',
-    'Casamientos',
-    'Reuniones'
+  const categories: { key: string; label: string }[] = [
+    { key: 'FESTIVAL', label: 'Festival' },
+    { key: 'RECITAL', label: 'Recital' },
+    { key: 'REUNION_TEMATICA', label: 'Reunión Temática' },
+    { key: 'ENCUENTRO_BARRIAL', label: 'Encuentro Barrial' },
+    { key: 'CUMPLEANIOS', label: 'Cumpleaños' },
+    { key: 'CASAMIENTO', label: 'Casamiento' },
+    { key: 'OTRO', label: 'Otro' }
   ];
 
   const daysInMonth = (date: Date): number => {
@@ -62,6 +70,12 @@ const EventCreator: React.FC = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validar tamaño (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('La imagen no puede superar los 5MB');
+        return;
+      }
+     
       setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -115,17 +129,78 @@ const EventCreator: React.FC = () => {
     return days;
   };
 
-  const handleSubmit = (): void => {
-    console.log({
-      title,
-      shortDescription,
-      detailedDescription,
-      category,
-      selectedDate,
-      startTime,
-      endTime,
-      imageFile
-    });
+  const handleSubmit = async (): Promise<void> => {
+    setError('');
+
+    // Validaciones
+    if (!title.trim()) {
+      setError('El título es requerido');
+      return;
+    }
+    if (!location.trim()) {
+      setError('La ubicación es requerida');
+      return;
+    }
+    if (!shortDescription.trim()) {
+      setError('La descripción corta es requerida');
+      return;
+    }
+    if (!detailedDescription.trim()) {
+      setError('La descripción detallada es requerida');
+      return;
+    }
+    if (!category) {
+      setError('Selecciona una categoría');
+      return;
+    }
+    if (!selectedDate) {
+      setError('Selecciona una fecha');
+      return;
+    }
+    if (!startTime) {
+      setError('Selecciona una hora de inicio');
+      return;
+    }
+    if (isPaid && (!price || parseFloat(price) <= 0)) {
+      setError('El precio debe ser mayor a 0 para eventos pagos');
+      return;
+    }
+
+    // Combinar fecha y hora
+    const [hours, minutes] = startTime.split(':');
+    const eventDateTime = new Date(selectedDate);
+    eventDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
+    // Validar que la fecha no sea en el pasado
+    if (eventDateTime <= new Date()) {
+      setError('La fecha y hora del evento deben ser en el futuro');
+      return;
+    }
+
+    try {
+      setLoading(true);
+     
+      const eventData = {
+        title,
+        location,
+        shortDescription,
+        fullDescription: detailedDescription,
+        category,
+        date: eventDateTime.toISOString(),
+        isPaid,
+        price: isPaid ? parseFloat(price) : undefined,
+      };
+
+      const createdEvent = await eventService.createEvent(eventData, imageFile || undefined);
+     
+      alert('¡Evento creado exitosamente!');
+      navigate(`/event/${createdEvent.id}`);
+    } catch (err: any) {
+      console.error('Error creating event:', err);
+      setError(err.response?.data?.error || 'Error al crear el evento');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -153,6 +228,18 @@ const EventCreator: React.FC = () => {
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Ej: Conferencia de Tecnología 2025"
                   className="w-full px-4 py-2 border border-accent rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              {/* Location */}
+              <div>
+                <label className="block text-md text-accent font-bold mb-2">Ubicación *</label>
+                <input
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="Ej: Buenos Aires, Argentina"
+                  className="w-full px-4 py-2 border border-accent rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
                 />
               </div>
               
@@ -194,12 +281,56 @@ const EventCreator: React.FC = () => {
                 >
                   <option value="">Selecciona una categoría</option>
                   {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
+                    <option key={cat.key} value={cat.key}>
+                        {cat.label}
                     </option>
                   ))}
                 </select>
               </div>
+
+              {/* Tipo de Evento */}
+              <div>
+                <label className="block text-md text-accent font-bold mb-2">Tipo de Evento *</label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      checked={!isPaid}
+                      onChange={() => {
+                        setIsPaid(false);
+                        setPrice('');
+                      }}
+                      className="w-5 h-5 accent-accent"
+                    />
+                    <span className="text-accent">Gratuito</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      checked={isPaid}
+                      onChange={() => setIsPaid(true)}
+                      className="w-5 h-5 accent-accent"
+                    />
+                    <span className="text-accent">De Pago</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Precio (si es pago) */}
+              {isPaid && (
+                <div>
+                  <label className="block text-md text-accent font-bold mb-2">Precio (ARS) *</label>
+                  <input
+                    type="number"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                    className="w-full px-4 py-2 border border-accent rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+                  />
+                </div>
+              )}
 
               {/* Image Upload */}
               <div>
@@ -311,17 +442,6 @@ const EventCreator: React.FC = () => {
                     className="w-full px-4 py-2 border border-accent rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                 </div>
-                <div>
-                  <label className="block text-md font-semibold mb-2 text-accent">
-                    Hora de Fin
-                  </label>
-                  <input
-                    type="time"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                    className="w-full px-4 py-2 border border-accent rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
-                  />
-                </div>
               </div>
             </div>
           </div>
@@ -331,9 +451,17 @@ const EventCreator: React.FC = () => {
         <div className="mt-6">
           <button
             onClick={handleSubmit}
+            disabled={loading}
             className="w-full bg-accent hover:bg-hovercolor text-xl text-white font-bold py-4 rounded-lg transition-colors"
           >
-            Crear Evento
+            {loading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Creando Evento...
+                </div>
+              ) : (
+                'Crear Evento'
+              )}
           </button>
         </div>
       </div>

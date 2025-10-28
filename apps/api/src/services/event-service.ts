@@ -264,10 +264,9 @@ export class EventService {
     }
   }
 
-  async getUserEvents(userId: number) {
+  async getUserAttendances(userId: number) {
     try {
-      const [attendances, purchases] = await Promise.all([
-        db.attendance.findMany({
+      const attendances = await db.attendance.findMany({
           where: { userId },
           include: {
             event: {
@@ -281,37 +280,13 @@ export class EventService {
               }
             }
           }
-        }),
-        db.purchase.findMany({
-          where: { userId },
-          include: {
-            event: {
-              include: {
-                creator: {
-                  select: {
-                    id: true,
-                    username: true,
-                  }
-                }
-              }
-            }
-          }
-        })
-      ]);
+      })
 
       return {
-        freeEvents: attendances.map(a => ({
+        Events: attendances.map(a => ({
           ...a.event,
           hasImage: !!a.event.imageData,
           imageUrl: a.event.imageData ? `/events/${a.event.id}/image` : null,
-          imageData: undefined
-        })),
-        paidEvents: purchases.map(p => ({
-          ...p.event,
-          quantity: p.quantity,
-          totalPaid: p.totalAmount,
-          hasImage: !!p.event.imageData,
-          imageUrl: p.event.imageData ? `/events/${p.event.id}/image` : null,
           imageData: undefined
         }))
       };
@@ -320,5 +295,19 @@ export class EventService {
       console.error("Error al obtener eventos del usuario:", error);
       throw new Error("Error al obtener eventos del usuario");
     }
+  }
+
+  async getUserEvents(userId: number) {
+    const events = await db.event.findMany({
+      where: { creatorId: userId },
+    });
+
+    return events.map(event => ({
+      ...event,
+      hasImage: !!event.imageData,
+      imageUrl: event.imageData ? `/events/${event.id}/image` : null,
+      imageData: undefined
+    }));
+  
   }
 }

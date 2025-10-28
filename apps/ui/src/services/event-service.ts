@@ -12,7 +12,7 @@ export interface Event {
   category: string;
   isCancelled: boolean;
   creatorId: number;
-  imageData?: any;
+  imageData?: ArrayBuffer | null;
   imageMimetype?: string;
   hasImage?: boolean;
   imageUrl?: string;
@@ -45,6 +45,12 @@ export interface CreateEventData {
   category: string;
 }
 
+export interface EventImageResponse {
+  eventId: number;
+  hasImage: boolean;
+  imageUrl?: string;
+}
+
 export const eventService = {
   getAllEvents: async (filters?: EventFilters): Promise<Event[]> => {
     const params = new URLSearchParams();
@@ -61,14 +67,19 @@ export const eventService = {
     return response.data.data;
   },
 
-  getUserEvents: async (): Promise<{ freeEvents: Event[]; paidEvents: Event[] }> => {
+  getUserEvents: async (): Promise<{ Events: Event[]}> => {
     const response = await api.get('/events/user/my-events');
+    return response.data.data;
+  },
+
+  getUserAttendances: async (): Promise<{ Attendances: Event[]}> => {
+    const response = await api.get('/events/user/my-attendances');
     return response.data.data;
   },
 
   createEvent: async (data: CreateEventData, imageFile?: File): Promise<Event> => {
     const formData = new FormData();
-    
+   
     Object.entries(data).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         formData.append(key, String(value));
@@ -89,7 +100,7 @@ export const eventService = {
 
   updateEvent: async (id: number, data: Partial<CreateEventData>, imageFile?: File): Promise<Event> => {
     const formData = new FormData();
-    
+   
     Object.entries(data).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         formData.append(key, String(value));
@@ -112,7 +123,7 @@ export const eventService = {
     await api.delete(`/events/${id}`);
   },
 
-  uploadEventImage: async (eventId: number, imageFile: File): Promise<any> => {
+  uploadEventImage: async (eventId: number, imageFile: File): Promise<EventImageResponse> => {
     const formData = new FormData();
     formData.append('image', imageFile);
 

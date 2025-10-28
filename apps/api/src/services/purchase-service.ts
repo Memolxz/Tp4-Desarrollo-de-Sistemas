@@ -35,7 +35,7 @@ export class PurchaseService {
         throw new Error("Saldo insuficiente");
       }
 
-      const purchase = await db.$transaction(async (tx) => {
+      const purchase = await db.$transaction(async (tx: Prisma.TransactionClient) => {
         // Descontar saldo del usuario
         await tx.user.update({
           where: { id: userId },
@@ -56,6 +56,25 @@ export class PurchaseService {
             event: true
           }
         });
+
+        // Registrar asistencia
+        const exisingAttendance = await tx.attendance.findUnique({
+          where: { 
+            userId_eventId: {
+              userId,
+              eventId
+            }
+          }
+        });
+
+        if (!exisingAttendance) {
+          await tx.attendance.create({
+            data: {
+              userId,
+              eventId,
+            }
+          });
+        }
 
         return createdPurchase;
       });

@@ -7,6 +7,28 @@ export interface Attendance {
   confirmedAt: string;
 }
 
+export interface Purchase {
+  id: number;
+  userId: number;
+  eventId: number;
+  quantity: number;
+  totalAmount: number;
+  purchasedAt: string;
+  event?: {
+    id: number;
+    title: string;
+    date: string;
+    shortDescription: string;
+    fullDescription: string;
+    location: string;
+    isPaid: boolean;
+    price?: number;
+    category: string;
+    isCancelled: boolean;
+    imageUrl?: string;
+  };
+}
+
 export const attendanceService = {
   confirmAttendance: async (eventId: number): Promise<Attendance> => {
     const response = await api.post(`/attendance/${eventId}`);
@@ -17,16 +39,6 @@ export const attendanceService = {
     await api.delete(`/attendance/${eventId}`);
   },
 };
-
-export interface Purchase {
-  id: number;
-  userId: number;
-  eventId: number;
-  quantity: number;
-  totalAmount: number;
-  purchasedAt: string;
-  event?: any;
-}
 
 export const purchaseService = {
   purchaseTickets: async (eventId: number, quantity: number): Promise<Purchase> => {

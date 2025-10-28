@@ -31,6 +31,17 @@ eventRouter.get('/user/my-events', jwtAuthMiddleware, async (req, res) => {
   }
 });
 
+// auth
+eventRouter.get('/user/my-attendances', jwtAuthMiddleware, async (req, res) => {
+  try {
+    if (!req.user) throw new Error('No autenticado');
+    const events = await eventService.getUserAttendances(req.user.id);
+    res.json({ ok: true, data: events });
+  } catch (error) {
+    res.status(401).json({ ok: false, error: (error as Error).message });
+  }
+});
+
 // public
 eventRouter.get('/', async (req, res) => {
   try {
