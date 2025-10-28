@@ -1,13 +1,7 @@
-import { Calendar, MapPin, SlidersHorizontal, UsersRound, X } from "lucide-react";
-import { useState, useEffect } from "react";
-import BasePage from "./BasePage";
-import type { ReactNode } from "react";
-import { Link } from "react-router-dom";
-
-interface BasePageProps {
-  pageName: string;
-  children: ReactNode;
-}
+import { Calendar, MapPin, SlidersHorizontal, UsersRound, X } from "lucide-react"
+import BasePage from "./BasePage"
+import { Link } from "react-router-dom"
+import { useState, useEffect } from "react"
 
 interface Event {
   id: number;
@@ -112,14 +106,15 @@ export default function EventsPage() {
   // Categorías disponibles para filtros
   const categoryDisplayNames: Record<string, string> = {
     Festival: "Festival",
-    Workshop: "Workshop",
-    Mindfulness: "Mindfulness",
-    Belleza: "Belleza",
-    Skincare: "Skincare",
-  };
-
+    ReunionTematica: "ReunionTematica",
+    EncuentroBarrial: "EncuentroBarrial",
+    Recital: "Recital",
+    Cumpleaños: "Cumpleaños",
+    Casamiento: "Casamiento",
+    Otro: "Otro",
+  }; 
+  
   useEffect(() => {
-    // Simulamos fetch
     const fetchEvents = async () => {
       setLoading(true);
       try {
@@ -134,6 +129,21 @@ export default function EventsPage() {
     };
     fetchEvents();
   }, []);
+
+  useEffect(() => {
+    if (!events.length) return;
+
+    const params = new URLSearchParams(location.search);
+    const categoryParam = params.get("category");
+    if (categoryParam) {
+      setSelectedCategories([categoryParam]);
+      const filtered = events.filter(ev => ev.category === categoryParam);
+      setFilteredEvents(filtered);
+    } else {
+      setFilteredEvents(events);
+      setSelectedCategories([]);
+    }
+  }, [location.search, events]);
 
   const toggleCategory = (category: string) => {
     setSelectedCategories((prev) =>
@@ -236,22 +246,26 @@ export default function EventsPage() {
 
               {/* Precio */}
               <h3 className="font-semibold mb-2">Precio</h3>
-              <div className="flex items-center gap-2 mb-4">
+              <div className="flex flex-col mb-4">
                 <input
-                  type="number"
-                  placeholder="Min"
-                  className="border rounded px-2 py-1 w-24"
-                  value={minPrice}
-                  onChange={(e) => setMinPrice(Number(e.target.value))}
-                />
-                <input
-                  type="number"
-                  placeholder="Max"
-                  className="border rounded px-2 py-1 w-24"
+                  type="range"
+                  min={0}
+                  max={10000}
+                  step={100}
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(Number(e.target.value))}
+                  className="w-full h-2 bg-gray-300 rounded-lg appearance-auto accent-accent"
                 />
+                <div className="flex flex-row justify-between">
+                  <div className="flex justify-end mt-1 text-sm text-gray-700">
+                    $0
+                  </div>
+                  <div className="flex justify-end mt-1 text-sm text-gray-700">
+                    ${maxPrice}
+                  </div>
+                </div>
               </div>
+
 
               {/* Fecha */}
               <h3 className="font-semibold mb-2">Fecha</h3>
@@ -284,8 +298,8 @@ export default function EventsPage() {
                   Aplicar
                 </button>
               </div>
+              </div>
             </div>
-          </div>
         )}
 
         {/* Lista de eventos */}
