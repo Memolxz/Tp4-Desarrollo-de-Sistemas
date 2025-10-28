@@ -1,6 +1,7 @@
 import { LogOut, Menu, UserRoundIcon, X } from "lucide-react";
 import { useState, useEffect} from "react";
 import { Link, useNavigate } from 'react-router-dom';
+import { authService } from "../services/auth-service";
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -31,8 +32,7 @@ export default function Header() {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
+        authService.logout();
         setIsAuthenticated(false);
         setIsOptionSignOutOpen(false);
         setIsOptionsOpen(false);
