@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { Home } from "lucide-react";
+import BasePage from "./BasePage";
 
 interface LoginResponse {
   ok: boolean;
@@ -11,7 +11,7 @@ interface LoginResponse {
   mensaje?: string;
 }
 
-function LoginForm() {
+function SignInForm() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: "",
@@ -60,8 +60,8 @@ function LoginForm() {
     };
 
     return (
-        <div className="flex w-full mt-20 flex-col justify-center items-center bg-transparent">
-            <div className="flex flex-col justify-center items-center w-1/3">
+        <div className="flex w-full mt-5 flex-col justify-center items-center bg-transparent">
+            <div className="w-1/3">
                 <form className="space-y-6" onSubmit={handleSubmit}>
                     <div>
                         <input
@@ -110,7 +110,7 @@ function LoginForm() {
                             type="submit"
                             disabled={loading}
                             className="w-1/2 rounded-full px-4 py-2 font-semibold font-geist
-                            bg-accent hover:bg-darkcolor text-white transition">
+                            bg-accent hover:bg-accent text-white transition">
                             {loading ? "Iniciando..." : "Iniciar"}
                         </button>
                     </div>
@@ -118,25 +118,23 @@ function LoginForm() {
 
                 <p className="mt-6 text-center text-sm font-geist text-accent">
                     ¿No tenés cuenta?{' '}
-                    <Link to="/signup" className="font-bold font-geist text-accent hover:text-darkcolor">
+                    <Link to="/signup" className="font-bold font-geist text-accent hover:text-accent">
                         ¡Registrate!
                     </Link>
                 </p>
-
-                <Link to="/home" className="text-accent mt-5">
-                    <Home size={40}/>
-                </Link>
             </div>
         </div>
     );
 }
 
-export default function LogIn() {
+export default function SignIn() {
     return (
-        <div className="flex flex-col items-center justify-center bg-dominant h-screen w-full font-geist">
-          <h1 className="text-5xl font-bold text-darkcolor">Inicia Sesion</h1>
-          <h2 className="mt-7 w-1/2 text-2xl text-center text-darkcolor/60">Hace tu cuenta para poder acceder a los mejores eventos!!</h2>
-          <LoginForm />
-        </div>
+        <BasePage pageName="login">
+            <div className="flex flex-col items-center justify-center bg-dominant w-full font-geist">
+            <h1 className="text-4xl font-bold text-accent">Inicia Sesion</h1>
+            <h2 className="mt-1 w-1/2 text-xl text-center text-accent/60">Hace tu cuenta para poder acceder a los mejores eventos!!</h2>
+            <SignInForm />
+            </div>
+        </BasePage>
     );
 }

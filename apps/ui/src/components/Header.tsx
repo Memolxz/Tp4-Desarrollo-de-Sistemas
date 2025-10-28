@@ -1,6 +1,7 @@
 import { LogOut, Menu, UserRoundIcon, X } from "lucide-react";
 import { useState, useEffect} from "react";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -8,6 +9,8 @@ export default function Header() {
     const [isOptionSignOutOpen, setIsOptionSignOutOpen] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const hideButtons = location.pathname === "/signin" || location.pathname === "/signup";
 
     useEffect(() => {
         checkAuth();
@@ -36,7 +39,7 @@ export default function Header() {
         setIsAuthenticated(false);
         setIsOptionSignOutOpen(false);
         setIsOptionsOpen(false);
-        navigate("/register");
+        navigate("/signup");
     };
 
     return (
@@ -78,29 +81,30 @@ export default function Header() {
 
           
           <nav className="flex gap-8 flex-1 justify-end text-sm font-semibold text-white tracking-wide items-center">
-            {isAuthenticated ? (
-              <div className="relative">
-                <button
-                  onClick={() => setIsOptionsOpen(!isOptionsOpen)}
-                  className="flex items-center justify-center border-2 h-10 w-10 border-white rounded-full hover:scale-105 transition-transform z-30">
-                  <UserRoundIcon className="scale-150" strokeWidth={1.5}/>
-                </button>
+            {!hideButtons && (
+              isAuthenticated ? (
+                <div className="relative">
+                  <button
+                    onClick={() => setIsOptionsOpen(!isOptionsOpen)}
+                    className="flex items-center justify-center border-2 h-10 w-10 border-white rounded-full hover:scale-105 transition-transform z-30">
+                    <UserRoundIcon className="scale-150" strokeWidth={1.5}/>
+                  </button>
 
-                {isOptionsOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-48 bg-dominant rounded-2xl shadow-lg flex flex-col text-start z-30
-                                  origin-top transition-all duration-300 ease-out animate-[growDown_0.25s_ease-out]">
-                    <Link
-                      to={"/profile"}
-                      onClick={() => setIsOptionsOpen(false)}
-                      className="flex flex-row py-2 mt-1 text-accent hover:text-hovercolor text-lg transition-transform hover:scale-105 ml-3 origin-left z-50">
-                      <UserRoundIcon className="mr-2"/>
-                      <p>Perfil</p>
-                    </Link>
-                    <div className="mx-auto flex w-[90%] items-center border-t border-gray-500 rounded-full"/>
-                    <button
-                      onClick={() => {
-                        setIsOptionSignOutOpen(!isOptionSignOutOpen);
-                        setIsOptionsOpen(!isOptionsOpen);
+                  {isOptionsOpen && (
+                    <div className="absolute top-full right-0 mt-2 w-48 bg-dominant rounded-2xl shadow-lg flex flex-col text-start z-30
+                                    origin-top transition-all duration-300 ease-out animate-[growDown_0.25s_ease-out]">
+                      <Link
+                        to={"/profile"}
+                        onClick={() => setIsOptionsOpen(false)}
+                        className="flex flex-row py-2 mt-1 text-accent hover:text-hovercolor text-lg transition-transform hover:scale-105 ml-3 origin-left z-50">
+                        <UserRoundIcon className="mr-2"/>
+                        <p>Perfil</p>
+                      </Link>
+                      <div className="mx-auto flex w-[90%] items-center border-t border-gray-500 rounded-full"/>
+                      <button
+                        onClick={() => {
+                          setIsOptionSignOutOpen(!isOptionSignOutOpen);
+                          setIsOptionsOpen(!isOptionsOpen);
                       }}
                       className="flex flex-row py-2 mb-1 text-red-800 hover:text-red-900 text-lg transition-transform hover:scale-105 ml-3 origin-left">
                       <LogOut className="mr-2"/>
@@ -120,7 +124,7 @@ export default function Header() {
                               hover:scale-105 transition-transform origin-center">
                 <Link to="/signin" className="items-end text-white font-bold text-lg">Iniciar Sesión</Link>
               </div>
-            )}
+            ))}
           </nav>
         </div>
 
