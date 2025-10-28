@@ -36,7 +36,7 @@ export default function Header() {
         setIsAuthenticated(false);
         setIsOptionSignOutOpen(false);
         setIsOptionsOpen(false);
-        navigate("/register");
+        navigate("/signup");
     };
 
     return (
