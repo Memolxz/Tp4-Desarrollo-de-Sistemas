@@ -106,8 +106,8 @@ export default function EventsPage() {
   // Categorías disponibles para filtros
   const categoryDisplayNames: Record<string, string> = {
     Festival: "Festival",
-    ReunionTematica: "ReunionTematica",
-    EncuentroBarrial: "EncuentroBarrial",
+    ReunionTematica: "Reunion Tematica",
+    EncuentroBarrial: "Encuentro Barrial",
     Recital: "Recital",
     Cumpleaños: "Cumpleaños",
     Casamiento: "Casamiento",
@@ -347,7 +347,7 @@ export default function EventsPage() {
         </div>
 
         {filteredEvents.length === 0 && (
-          <div className="text-center py-10 text-accent/60">No se encontraron eventos con estos filtros</div>
+          <div className="text-center py-10 mb-36 text-accent/60">No se encontraron eventos con estos filtros</div>
         )}
       </div>
     </BasePage>

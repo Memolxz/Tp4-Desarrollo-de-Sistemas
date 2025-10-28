@@ -1,5 +1,4 @@
 import {
-  SquareArrowOutUpRight,
   ChevronLeft,
 } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -205,7 +204,6 @@ export default function Event() {
             onClick={() => alert(`Inscripción al evento "${event.title}"`)}
           >
             <p className="text-white">Inscribirse</p>
-            <SquareArrowOutUpRight className="ml-2 h-5 w-5 text-white" />
           </button>
         </div>
       </div>
