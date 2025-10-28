@@ -195,9 +195,9 @@ const EventCreator: React.FC = () => {
      
       alert('¡Evento creado exitosamente!');
       navigate(`/event/${createdEvent.id}`);
-    } catch (err: any) {
-      console.error('Error creating event:', err);
-      setError(err.response?.data?.error || 'Error al crear el evento');
+    } catch (err) {
+      const error = err as {response?: {data?: {error: string}}};;
+      setError(error.response?.data?.error || 'Error al crear el evento');
     } finally {
       setLoading(false);
     }

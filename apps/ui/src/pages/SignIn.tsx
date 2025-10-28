@@ -27,9 +27,9 @@ function SignInForm() {
         try {
             await authService.login(formData);
             navigate("/home");
-        } catch (error: any) {
-            console.error("Register error:", error);
-            setError(error.message || "Error al crear la cuenta");
+        } catch (err) {
+            const error = err as {response?: {data?: {error: string}}};
+            setError(error.response?.data?.error || "Error al crear la cuenta");
         } finally {
             setLoading(false);
         }

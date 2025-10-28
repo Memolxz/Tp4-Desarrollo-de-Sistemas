@@ -29,8 +29,9 @@ export default function VirtualWallet({ balance, userId, onBalanceUpdate }: Virt
       setAmount("");
       setShowModal(false);
       onBalanceUpdate(); // Refresh user data
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Error al cargar saldo");
+    } catch (err) {
+      const error = err as {response?: {data?: {error: string}}};
+      setError(error.response?.data?.error || "Error al cargar saldo");
     } finally {
       setLoading(false);
     }

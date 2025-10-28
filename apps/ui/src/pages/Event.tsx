@@ -38,9 +38,9 @@ export default function Event() {
       setLoading(true);
       const data = await eventService.getEventById(parseInt(id!));
       setEvent(data);
-    } catch (err: any) {
-      console.error("Error fetching event:", err);
-      setError(err.response?.data?.error || "Error al cargar el evento");
+    } catch (err) {
+      const error = err as {response?: {data?: {error: string}}};
+      setError(error.response?.data?.error || "Error al cargar el evento");
     } finally {
       setLoading(false);
     }
@@ -62,8 +62,9 @@ export default function Event() {
         alert("¡Asistencia confirmada exitosamente!");
         fetchEvent(); // Refresh event data
       }
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Error al procesar la inscripción");
+    } catch (err) {
+      const error = err as {response?: {data?: {error: string}}};
+      setError(error.response?.data?.error || "Error al procesar la inscripción");
     } finally {
       setActionLoading(false);
     }

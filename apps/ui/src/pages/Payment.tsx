@@ -38,9 +38,9 @@ export default function Payment() {
      
       setEvent(eventData);
       setBalance(parseFloat(userBalance.toString()));
-    } catch (err: any) {
-      console.error("Error fetching data:", err);
-      setError(err.response?.data?.error || "Error al cargar los datos");
+    } catch (err) {
+      const error = err as {response?: {data?: {error: string}}};
+      setError(error.response?.data?.error || "Error al cargar los datos");
     } finally {
       setLoading(false);
     }
@@ -58,8 +58,9 @@ export default function Payment() {
       await purchaseService.purchaseTickets(event.id, quantity);
       alert(`¡Compra exitosa! ${quantity} entrada(s) adquirida(s)`);
       navigate(`/event/${event.id}`);
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Error al realizar la compra");
+    } catch (err) {
+      const error = err as {response?: {data?: {error: string}}};
+      setError(error.response?.data?.error || "Error al realizar la compra");
     } finally {
       setPurchasing(false);
     }
