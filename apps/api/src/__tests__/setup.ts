@@ -1,16 +1,35 @@
 import { db } from '../db/db';
 
+// Verificar que estamos usando la DB de test
+const databaseUrl = process.env.DATABASE_URL;
+if (!databaseUrl?.includes('test')) {
+  throw new Error(
+    `⚠️  DANGER: Not using test database!\n` +
+    `Current DATABASE_URL: ${databaseUrl}\n` +
+    `Make sure .env.test is being loaded correctly.`
+  );
+}
+
 // Limpiar la base de datos antes de cada test
 export const cleanDatabase = async () => {
-  await db.purchase.deleteMany();
-  await db.attendance.deleteMany();
-  await db.event.deleteMany();
-  await db.user.deleteMany();
+  console.log('🧹 Cleaning test database...');
+  try {
+    await db.purchase.deleteMany();
+    await db.attendance.deleteMany();
+    await db.event.deleteMany();
+    await db.user.deleteMany();
+    console.log('✅ Database cleaned successfully');
+  } catch (error) {
+    console.error('❌ Error cleaning database:', error);
+    throw error;
+  }
 };
 
 // Cerrar conexión después de todos los tests
 export const closeDatabase = async () => {
+  console.log('🔌 Closing database connection...');
   await db.$disconnect();
+  console.log('✅ Database connection closed');
 };
 
 // Helper para crear un usuario de prueba
