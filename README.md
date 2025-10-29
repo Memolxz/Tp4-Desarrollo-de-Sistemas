@@ -33,17 +33,10 @@ Sistema web para la creación y gestión de eventos sociales. Permite a los usua
 pnpm install
 ```
 
-2. Configurar `.env` en `apps/api`:
-```env
-DATABASE_URL="postgresql://usuario:contraseña@localhost:5432/db"
-JWT_SECRET="tu_clave_secreta"
-PORT=3000
-```
-
-3. Configurar la base de datos:
+2. Generar el Client en el back-end:
 ```bash
+cd apps/api
 pnpm prisma generate
-pnpm prisma migrate dev
 ```
 
 ## Compilación y Ejecución
@@ -53,14 +46,14 @@ pnpm prisma migrate dev
 cd apps/api
 pnpm run dev
 ```
-Corre en `http://localhost:3000`
+Corre en `http://localhost:8000`
 
 ### Frontend
 ```bash
 cd apps/ui
 pnpm run dev
 ```
-Corre en `http://localhost:5173`
+Corre en `http://localhost:5173` (este es el que se usa para usar la pagina)
 
 ## Decisiones de Diseño
 
