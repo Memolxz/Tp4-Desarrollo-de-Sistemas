@@ -14,7 +14,11 @@ export class UserService {
     try {
       const existingUser = await db.user.findFirst({
         where: {
-          dni: body.dni 
+          OR: [
+            { email: body.email },
+            { username: body.username },
+            { dni: body.dni }
+          ]
         }
       });
 
