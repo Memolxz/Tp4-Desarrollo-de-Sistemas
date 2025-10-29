@@ -16,7 +16,7 @@ export default function VirtualWallet({ balance, userId, onBalanceUpdate }: Virt
 
   const handleAddBalance = async () => {
     const numAmount = parseFloat(amount);
-   
+  
     if (isNaN(numAmount) || numAmount <= 0) {
       setError("Ingresá un monto válido mayor a 0");
       return;
