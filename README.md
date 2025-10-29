@@ -110,4 +110,5 @@ Hay algunos endpoints que tal vez no usamos y debido a que nos quedamos sin tiem
 - `GET /users/balance` - Obtener balance del usuario
 
 ## Tests
-Los tests del proyecto presentan errores debido a que, durante el desarrollo, detectamos que las pruebas están interactuando con la base de datos real en lugar de utilizar mocks. Y debido a falta de tiempo, no pudimos arreglar este problema.
+Los tests del proyecto presentan errores debido a que, hay muchas cosas que se chequean en el front-end en vez del back end. Tambien puede ser debido a que los test pueden llegar a estar trabajando dentro de la db real y no una de prueba.
+Lamentablemente no pudimos verificar bien el problema
