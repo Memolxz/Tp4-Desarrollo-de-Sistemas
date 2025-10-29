@@ -131,7 +131,7 @@ export default function Event() {
         </div>
 
         {/* Info */}
-        <div className="flex flex-col items-start bg-transparent w-1/2 p-10">
+        <div className="flex flex-row items-start bg-transparent w-1/2 p-10">
           <h1 className="text-start font-bold text-accent text-3xl">
             {event.title}
           </h1>

@@ -313,7 +313,7 @@ export default function EventsPage() {
         </div>
 
         {filteredEvents.length === 0 && (
-          <div className="text-center py-10 mb-36 text-accent/60">No se encontraron eventos con estos filtros</div>
+          <div className="text-center py-10 mb-10 text-accent/60">No se encontraron eventos con estos filtros</div>
         )}
       </div>
     </BasePage>

@@ -70,7 +70,6 @@ const EventCreator: React.FC = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validar tamaño (5MB)
       if (file.size > 5 * 1024 * 1024) {
         setError('La imagen no puede superar los 5MB');
         return;
@@ -107,7 +106,9 @@ const EventCreator: React.FC = () => {
       const isSelected = selectedDate?.getDate() === day && 
                         selectedDate?.getMonth() === currentMonth.getMonth() &&
                         selectedDate?.getFullYear() === currentMonth.getFullYear();
-      const isToday = day === 27 && currentMonth.getMonth() === 9;
+      const isToday = day === new Date().getDate() && 
+                      currentMonth.getMonth() === new Date().getMonth() &&
+                      currentMonth.getFullYear() === new Date().getFullYear();
       
       days.push(
         <div
@@ -131,54 +132,44 @@ const EventCreator: React.FC = () => {
 
   const handleSubmit = async (): Promise<void> => {
     setError('');
-
-    // Validaciones
-    if (!title.trim()) {
-      setError('El título es requerido');
-      return;
-    }
-    if (!location.trim()) {
-      setError('La ubicación es requerida');
-      return;
-    }
-    if (!shortDescription.trim()) {
-      setError('La descripción corta es requerida');
-      return;
-    }
-    if (!detailedDescription.trim()) {
-      setError('La descripción detallada es requerida');
-      return;
-    }
-    if (!category) {
-      setError('Selecciona una categoría');
-      return;
-    }
-    if (!selectedDate) {
-      setError('Selecciona una fecha');
-      return;
-    }
-    if (!startTime) {
-      setError('Selecciona una hora de inicio');
-      return;
-    }
-    if (isPaid && (!price || parseFloat(price) <= 0)) {
-      setError('El precio debe ser mayor a 0 para eventos pagos');
-      return;
-    }
-
-    // Combinar fecha y hora
-    const [hours, minutes] = startTime.split(':');
-    const eventDateTime = new Date(selectedDate);
-    eventDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-
-    // Validar que la fecha no sea en el pasado
-    if (eventDateTime <= new Date()) {
-      setError('La fecha y hora del evento deben ser en el futuro');
-      return;
-    }
+    setLoading(true);
 
     try {
-      setLoading(true);
+      // Validaciones
+      if (!title.trim()) {
+        throw new Error('El título es requerido');
+      }
+      if (!location.trim()) {
+        throw new Error('La ubicación es requerida');
+      }
+      if (!shortDescription.trim()) {
+        throw new Error('La descripción corta es requerida');
+      }
+      if (!detailedDescription.trim()) {
+        throw new Error('La descripción detallada es requerida');
+      }
+      if (!category) {
+        throw new Error('Selecciona una categoría');
+      }
+      if (!selectedDate) {
+        throw new Error('Selecciona una fecha');
+      }
+      if (!startTime) {
+        throw new Error('Selecciona una hora de inicio');
+      }
+      if (isPaid && (!price || parseFloat(price) <= 0)) {
+        throw new Error('El precio debe ser mayor a 0 para eventos pagos');
+      }
+
+      // Combinar fecha y hora
+      const [hours, minutes] = startTime.split(':');
+      const eventDateTime = new Date(selectedDate);
+      eventDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
+      // Validar que la fecha no sea en el pasado
+      if (eventDateTime <= new Date()) {
+        throw new Error('La fecha y hora del evento deben ser en el futuro');
+      }
      
       const eventData = {
         title,
@@ -196,8 +187,9 @@ const EventCreator: React.FC = () => {
       alert('¡Evento creado exitosamente!');
       navigate(`/event/${createdEvent.id}`);
     } catch (err) {
-      const error = err as {response?: {data?: {error: string}}};;
-      setError(error.response?.data?.error || 'Error al crear el evento');
+      console.error('Error al crear evento:', err);
+      const error = err as {response?: {data?: {error: string}}, message?: string};
+      setError(error.response?.data?.error || error.message || 'Error al crear el evento');
     } finally {
       setLoading(false);
     }
@@ -447,12 +439,19 @@ const EventCreator: React.FC = () => {
           </div>
         </div>
         
+        {/* Error Message */}
+        {error && (
+          <div className="mt-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+            {error}
+          </div>
+        )}
+        
         {/* Create Button */}
         <div className="mt-6">
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="w-full bg-accent hover:bg-hovercolor text-xl text-white font-bold py-4 rounded-lg transition-colors"
+            className="w-full bg-accent hover:bg-hovercolor text-xl text-white font-bold py-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
                 <div className="flex items-center justify-center gap-2">

@@ -76,6 +76,7 @@ eventRouter.post('/', jwtAuthMiddleware, upload.single('image'), async (req, res
       ...req.body,
       creatorId: req.user.id,
       date: new Date(req.body.date),
+      isPaid: req.body.isPaid === 'true' || req.body.isPaid === true, // <-- CAMBIO AQUÍ
       price: req.body.price ? parseFloat(req.body.price) : undefined
     };
 
@@ -96,6 +97,9 @@ eventRouter.put('/:id', jwtAuthMiddleware, upload.single('image'), async (req, r
     const updateData: any = { ...req.body };
     if (updateData.date) updateData.date = new Date(updateData.date);
     if (updateData.price) updateData.price = parseFloat(updateData.price);
+    if (updateData.isPaid !== undefined) { // <-- AGREGAR ESTO
+      updateData.isPaid = updateData.isPaid === 'true' || updateData.isPaid === true;
+    }
 
     let { imageBuffer, imageMimetype } = processImage(req.file);
 

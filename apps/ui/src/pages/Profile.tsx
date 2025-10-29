@@ -173,7 +173,7 @@ export default function Profile() {
                 <Mail className="h-4 w-4 text-accent/60 mr-1" />
                 <p className="text-md text-accent/60 font-geist">{user.email}</p>
               </div>
-              <h3 className="text-md italic text-accent/60 font-geist">DNI: {user.dni}</h3>
+              <h3 className="text-md italic text-accent/60 font-geist">{user.dni}</h3>
             </div>
           </div>
         </div>
