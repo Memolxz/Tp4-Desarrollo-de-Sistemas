@@ -33,17 +33,10 @@ Sistema web para la creación y gestión de eventos sociales. Permite a los usua
 pnpm install
 ```
 
-2. Configurar `.env` en `apps/api`:
-```env
-DATABASE_URL="postgresql://usuario:contraseña@localhost:5432/db"
-JWT_SECRET="tu_clave_secreta"
-PORT=3000
-```
-
-3. Configurar la base de datos:
+2. Generar el Client en el back-end:
 ```bash
+cd apps/api
 pnpm prisma generate
-pnpm prisma migrate dev
 ```
 
 ## Compilación y Ejecución
@@ -53,14 +46,14 @@ pnpm prisma migrate dev
 cd apps/api
 pnpm run dev
 ```
-Corre en `http://localhost:3000`
+Corre en `http://localhost:8000`
 
 ### Frontend
 ```bash
 cd apps/ui
 pnpm run dev
 ```
-Corre en `http://localhost:5173`
+Corre en `http://localhost:5173` (este es el que se usa para usar la pagina)
 
 ## Decisiones de Diseño
 
@@ -115,4 +108,5 @@ Hay algunos endpoints que tal vez no usamos y debido a que nos quedamos sin tiem
 - `GET /users/balance` - Obtener balance del usuario
 
 ## Tests
-Los tests del proyecto presentan errores debido a que, durante el desarrollo, detectamos que las pruebas están interactuando con la base de datos real en lugar de utilizar mocks. Y debido a falta de tiempo, no pudimos arreglar este problema.
+Los tests del proyecto presentan errores debido a que, hay muchas cosas que se chequean en el front-end en vez del back end. Tambien puede ser debido a que los test pueden llegar a estar trabajando dentro de la db real y no una de prueba.
+Lamentablemente no pudimos verificar bien el problema
