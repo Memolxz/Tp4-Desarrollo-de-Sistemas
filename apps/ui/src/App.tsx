@@ -15,7 +15,7 @@ export default function App() {
           <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="/createevent" element={<RequireAuth><CreateEvent /></RequireAuth>} />
           <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
-          <Route path="/payment" element={<RequireAuth><Payment /></RequireAuth>} />
+          <Route path="/payment/:id" element={<RequireAuth><Payment /></RequireAuth>} />
           <Route path="/event/:id" element={<Event />} />
           <Route path="/signin" element={<RequireGuest><SignIn /></RequireGuest>} />
           <Route path="/signup" element={<RequireGuest><SignUp /></RequireGuest>} />

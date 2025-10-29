@@ -67,12 +67,12 @@ export const eventService = {
     return response.data.data;
   },
 
-  getUserEvents: async (): Promise<{ Events: Event[]}> => {
+  getUserEvents: async (): Promise<Event[]> => {
     const response = await api.get('/events/user/my-events');
     return response.data.data;
   },
 
-  getUserAttendances: async (): Promise<{ Attendances: Event[]}> => {
+  getUserAttendances: async (): Promise<Event[]> => {
     const response = await api.get('/events/user/my-attendances');
     return response.data.data;
   },

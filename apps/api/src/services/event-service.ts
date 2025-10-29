@@ -65,7 +65,7 @@ export class EventService {
       return events.map(event => ({
         ...event,
         hasImage: !!event.imageData,
-        imageUrl: event.imageData ? `/events/${event.id}/image` : null,
+        imageUrl: event.imageData ? `http://localhost:8000/events/${event.id}/image` : null,
         imageData: undefined
       }));
 
@@ -102,7 +102,7 @@ export class EventService {
       return {
         ...event,
         hasImage: !!event.imageData,
-        imageUrl: event.imageData ? `/events/${event.id}/image` : null,
+        imageUrl: event.imageData ? `http://localhost:8000/events/${event.id}/image` : null,
         imageData: undefined
       };
       
@@ -282,14 +282,12 @@ export class EventService {
           }
       })
 
-      return {
-        Events: attendances.map(a => ({
+      return attendances.map(a => ({
           ...a.event,
           hasImage: !!a.event.imageData,
           imageUrl: a.event.imageData ? `/events/${a.event.id}/image` : null,
           imageData: undefined
-        }))
-      };
+        }));
 
     } catch (error) {
       console.error("Error al obtener eventos del usuario:", error);

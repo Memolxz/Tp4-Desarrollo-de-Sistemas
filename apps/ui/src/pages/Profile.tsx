@@ -6,7 +6,9 @@ import { useState, useEffect } from "react";
 import { eventService, type Event } from "../services/event-service";
 import axios from "axios";
 
-function EventsCarousel({ events = [] }: { events?: Event[] }) {
+function EventsCarousel({ events = [] }: { events?: Event[] | null }) {
+  if (!Array.isArray(events) || events.length === 0)
+    return <p className="text-gray-500 text-center">No hay eventos disponibles</p>;
   const [index, setIndex] = useState(0);
   const visible = 4;
 
@@ -32,9 +34,9 @@ function EventsCarousel({ events = [] }: { events?: Event[] }) {
         </button>
       )}
 
-      <div className="overflow-hidden w-full">
+      <div className="overflow-hidden w-full flex justify-center">
         <div
-          className="flex transition-transform duration-500 ease-in-out"
+          className="flex transition-transform duration-500 ease-in-out w-[80%]"
           style={{ transform: `translateX(-${index * (100 / visible)}%)` }}
         >
           {events.map((event) => (
@@ -110,8 +112,8 @@ export default function Profile() {
         eventService.getUserAttendances(),
       ]);
 
-      setUserEvents(eventsData.Events || []);
-      setUserAttendances(attendancesData.Attendances || []);
+      setUserEvents(eventsData || []);
+      setUserAttendances(attendancesData || []);
     } catch (err) {
       console.error("Error al obtener el perfil:", err);
     } finally {

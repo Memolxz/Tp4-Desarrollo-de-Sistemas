@@ -1,4 +1,4 @@
-import { ChevronLeft, CreditCard, Calendar, MapPin, ShoppingCart, AlertCircle } from "lucide-react";
+import { CreditCard, Calendar, MapPin, ShoppingCart, AlertCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import BasePage from "./BasePage";
@@ -66,6 +66,10 @@ export default function Payment() {
     }
   };
 
+  const handleProfile = () => {
+    navigate("/profile");
+  };
+
   if (loading) {
     return (
       <BasePage pageName="payment loading">
@@ -106,46 +110,8 @@ export default function Payment() {
     
     <BasePage pageName="event">
     <div className="flex flex-col justify-center font-geist items-center bg-dominant w-full px-10">
-      <div className="relative flex flex-row justify-between items-between bg-accent/10 w-[90%] rounded-3xl border border-accent/10">
-        {/* Imagen */}
-        <div className="flex flex-col justify-center items-center bg-white w-1/2 rounded-3xl relative">
-          <Link to={`/event/${event.id}`}>
-            <ChevronLeft className="absolute top-5 left-5 text-accent h-10 w-10 z-10" />
-          </Link>
-
-          <div className="flex justify-center items-center w-full">
-            {event.imageUrl ? (
-                <img
-                  src={event.imageUrl || "/placeholder.png"}
-                  alt={event.title}
-                  className="max-h-96 max-w-full object-contain rounded-2xl"
-                  onError={(e) => {
-                    e.currentTarget.src = "/placeholder.png";
-                  }}
-                />
-              ) : (
-                <div className="w-full h-64 bg-gray-200 rounded-2xl flex items-center justify-center">
-                  <p className="text-gray-500">Sin imagen</p>
-                </div>
-              )}
-          </div>
-        </div>
-
-        <div className="mt-6 w-full space-y-3">
-              <h2 className="text-xl font-bold text-accent">{event.title}</h2>
-              <div className="flex items-center gap-2 text-accent/70 text-sm">
-                <Calendar size={16} />
-                <span>{new Date(event.date).toLocaleString("es-AR", { dateStyle: "long", timeStyle: "short" })}</span>
-              </div>
-              <div className="flex items-center gap-2 text-accent/70 text-sm">
-                <MapPin size={16} />
-                <span>{event.location}</span>
-              </div>
-            </div>
-          </div>
-
           {/* Información de Pago */}
-          <div className="flex flex-col items-start bg-transparent w-1/2 p-10 space-y-6">
+          <div className="flex flex-col items-start bg-transparent w-[90%] p-10 space-y-6">
             <div className="flex items-center gap-3 text-accent">
               <ShoppingCart className="h-8 w-8" />
               <h1 className="text-3xl font-bold">Comprar Entradas</h1>
@@ -162,6 +128,22 @@ export default function Payment() {
               <p className="text-2xl font-bold text-accent">
                 $ {balance.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
+            </div>
+
+            {/* Info del Evento */}
+            <div className="w-full bg-accent/10 rounded-2xl p-4">
+              <div className="flex items-center gap-2 text-accent mb-2">
+                <CreditCard className="h-5 w-5" />
+                <p className="text-sm font-semibold">Evento: {event.title}</p>
+              </div>
+              <div className="flex items-center gap-2 text-accent/70 text-sm">
+                <Calendar size={16} />
+                <span>{new Date(event.date).toLocaleString("es-AR", { dateStyle: "long", timeStyle: "short" })}</span>
+              </div>
+              <div className="flex items-center gap-2 text-accent/70 text-sm">
+                <MapPin size={16} />
+                <span>{event.location}</span>
+              </div>
             </div>
 
             {/* Cantidad de Entradas */}
@@ -227,12 +209,12 @@ export default function Payment() {
                   <p className="text-red-700 text-xs mt-1">
                     Te faltan $ {(totalAmount - balance).toLocaleString("es-AR", { minimumFractionDigits: 2 })} para completar esta compra.
                   </p>
-                  <Link
-                    to="/profile"
+                  <button
+                    onClick={() => handleProfile()}
                     className="text-red-800 underline text-xs font-semibold hover:text-red-900 mt-2 inline-block"
                   >
                     Cargar saldo
-                  </Link>
+                  </button>
                 </div>
               </div>
             )}

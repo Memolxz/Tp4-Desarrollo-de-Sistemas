@@ -39,7 +39,6 @@ export default function Header() {
   };
 
   const handleProfile = () => {
-    // opcionalmente podrías validar el token acá antes de navegar
     navigate("/profile");
   };
 
@@ -52,19 +51,20 @@ export default function Header() {
           </button>
 
           {isMenuOpen && (
-            <div className="absolute top-full left-0 px-4 broder border-accent mt-2 w-48 bg-white rounded-2xl shadow-sm flex flex-col text-start z-30 origin-top">
+            <div className="absolute top-full gap-2 left-0 border border-accent mt-2 w-48 bg-dominant rounded-2xl shadow-sm flex flex-col text-start z-30 origin-top">
               <Link
                 to={"/events"}
                 onClick={() => setIsMenuOpen(false)}
-                className="flex flex-row py-2 mt-1 text-accent hover:text-hovercolor text-lg transition-transform hover:scale-105 ml-3 origin-left z-50"
+                className="flex flex-row pt-3 text-accent hover:text-hovercolor text-lg transition-transform hover:scale-105 ml-5 origin-left z-50"
               >
                 <p>Ver Eventos</p>
               </Link>
+              <div className="w-full border-t border-accent" />
               {isAuthenticated && (
                 <Link
                   to={"/createevent"}
                   onClick={() => setIsMenuOpen(false)}
-                  className="flex flex-row py-2 mt-1 text-accent hover:text-hovercolor text-lg transition-transform hover:scale-105 ml-3 origin-left z-50"
+                  className="flex flex-row pb-3 text-accent hover:text-hovercolor text-lg transition-transform hover:scale-105 ml-5 origin-left z-50"
                 >
                   <p>Crear Evento</p>
                 </Link>
@@ -91,7 +91,7 @@ export default function Header() {
               </button>
 
               {isOptionsOpen && (
-                <div className="absolute top-full right-0 mt-2 w-48 bg-dominant rounded-2xl shadow-lg flex flex-col text-start z-30 origin-top transition-all duration-300 ease-out animate-[growDown_0.25s_ease-out]">
+                <div className="absolute border border-accent top-full right-0 mt-2 w-48 bg-dominant rounded-2xl shadow-lg flex flex-col text-start z-30 origin-top transition-all duration-300 ease-out animate-[growDown_0.25s_ease-out]">
                   <button
                     onClick={() => {
                       setIsOptionsOpen(false);
@@ -102,7 +102,7 @@ export default function Header() {
                     <UserRoundIcon className="mr-2" />
                     <p>Perfil</p>
                   </button>
-                  <div className="mx-auto flex w-[90%] items-center border-t border-gray-500 rounded-full" />
+                  <div className="w-full border-t border-accent" />
                   <button
                     onClick={() => {
                       setIsOptionSignOutOpen(!isOptionSignOutOpen);
