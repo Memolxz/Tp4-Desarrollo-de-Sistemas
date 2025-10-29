@@ -38,11 +38,6 @@ export const attendanceService = {
   cancelAttendance: async (eventId: number): Promise<void> => {
     await api.delete(`/attendance/${eventId}`);
   },
-
-  getUserAttendances: async (): Promise<Attendance[]> => {
-    const response = await api.get('/attendance/my-attendances');
-    return response.data.data;
-  },
 };
 
 export const purchaseService = {

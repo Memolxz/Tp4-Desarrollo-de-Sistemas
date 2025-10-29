@@ -56,17 +56,31 @@ export default function Event() {
   const checkUserRegistration = async (eventData: Event) => {
     try {
       const eventId = eventData.id;
+      console.log("🔍 Verificando inscripción para evento ID:", eventData.id);
 
       if (eventData.isPaid) {
-        // Para eventos pagos, verificar si tiene una compra
+        const purchases = await purchaseService.getUserPurchases();
+        console.log("Compras del usuario:", purchases);
+        const purchase = purchases.find(p => p.eventId === eventData.id);
+        console.log("🎟 Compra encontrada:", purchase);
+        setHasPurchase(!!purchase);
+        setIsUserRegistered(!!purchase);
+      } else {
+        const attendances = await eventService.getUserAttendances();
+        console.log("Asistencias del usuario:", attendances);
+        const attendance = attendances.find(a => a.id === eventData.id);
+        console.log("Asistencia encontrada:", attendance);
+        setIsUserRegistered(!!attendance);
+      }
+
+      if (eventData.isPaid) {
         const purchases = await purchaseService.getUserPurchases();
         const purchase = purchases.find(p => p.eventId === eventId);
         setHasPurchase(!!purchase);
         setIsUserRegistered(!!purchase);
       } else {
-        // Para eventos gratuitos, verificar en las asistencias
-        const attendances = await attendanceService.getUserAttendances();
-        const attendance = attendances.find(a => a.eventId === eventId);
+        const attendances = await eventService.getUserAttendances();
+        const attendance = attendances.find(a => a.id === eventId);
         setIsUserRegistered(!!attendance);
       }
     } catch (err) {
@@ -76,6 +90,7 @@ export default function Event() {
     }
   };
 
+
   const handleAttendance = async () => {
     if (!event || !isAuthenticated) return;
 
@@ -83,23 +98,20 @@ export default function Event() {
       setActionLoading(true);
       setError("");
 
-      if (isUserRegistered && !event.isPaid && !hasPurchase) {
+      if (isUserRegistered && !event.isPaid) {
         // Permitir baja solo en eventos gratuitos
         await attendanceService.cancelAttendance(event.id);
         alert("Te has dado de baja del evento exitosamente.");
         setIsUserRegistered(false);
-        await fetchEvent(); // Refresh event data
+        await fetchEvent();
       } else {
-        // Usuario no inscrito - proceder con inscripción
         if (event.isPaid) {
-          // Si es pago, redirigir a página de pago
           navigate(`/payment/${event.id}`);
         } else {
-          // Si es gratis, confirmar asistencia
           await attendanceService.confirmAttendance(event.id);
           alert("¡Asistencia confirmada exitosamente!");
           setIsUserRegistered(true);
-          await fetchEvent(); // Refresh event data
+          await fetchEvent();
         }
       }
     } catch (err) {
@@ -109,6 +121,7 @@ export default function Event() {
       setActionLoading(false);
     }
   };
+
 
   const getButtonText = () => {
     if (actionLoading) return "Procesando...";
@@ -241,39 +254,30 @@ export default function Event() {
             )}
 
             {isAuthenticated ? (
-              <>
-                {/* Si el usuario está inscrito en un evento pago, no mostrar botón */}
-                {isUserRegistered && (event.isPaid || hasPurchase) ? (
-                  <div className="flex flex-col items-center justify-center w-full h-12 bg-lightcomplement rounded-2xl border-2 border-hovercolor">
-                    <Check className="h-6 w-6"/>
-                    <p className="text-accent font-semibold text-lg">Ya estás inscrito</p>
-                  </div>
-                ) : (
-                  <button
-                    className={`flex flex-row justify-center items-center rounded-2xl font-semibold w-full h-12 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                      isUserRegistered 
-                        ? "bg-red-600 hover:bg-red-700" 
-                        : "bg-accent hover:bg-hovercolor"
-                    }`}
-                    onClick={handleAttendance}
-                    disabled={actionLoading || event.isCancelled}
-                  >
-                    <p className="text-white text-lg">
-                      {getButtonText()}
-                    </p>
-                  </button>
-                )}
-              </>
-            ) : (
-              <Link
-                to="/signin"
-                className="flex flex-row justify-center items-center bg-accent rounded-2xl hover:bg-hovercolor font-semibold w-full h-12 transition-colors"
-              >
-                <p className="text-white text-lg">
-                  Inicia Sesión para Inscribirte
-                </p>
-              </Link>
-            )}
+            <>
+              {isUserRegistered && (event.isPaid || hasPurchase) ? (
+                <div className="flex flex-row items-center justify-center w-full h-12 bg-lightcomplement rounded-2xl border-2 border-hovercolor">
+                  <Check className="h-6 w-6"/>
+                  <p className="text-accent font-semibold text-lg">Ya estás inscrito</p>
+                </div>
+              ) : (
+                <button
+                  className={`flex flex-row justify-center items-center rounded-2xl font-semibold w-full h-12 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                    isUserRegistered ? "bg-red-600 hover:bg-red-700" : "bg-accent hover:bg-hovercolor"
+                  }`}
+                  onClick={handleAttendance}
+                  disabled={actionLoading || event.isCancelled}
+                >
+                  <p className="text-white text-lg">{getButtonText()}</p>
+                </button>
+              )}
+            </>
+          ) : (
+            <Link to="/signin" className="flex flex-row justify-center items-center bg-accent rounded-2xl hover:bg-hovercolor font-semibold w-full h-12 transition-colors">
+              <p className="text-white text-lg">Inicia Sesión para Inscribirte</p>
+            </Link>
+          )}
+
           </div>
         </div>
       </div>

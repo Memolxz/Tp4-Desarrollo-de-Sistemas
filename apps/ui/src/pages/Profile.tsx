@@ -8,12 +8,12 @@ import axios from "axios";
 
 function EventsCarousel({ events = [] }: { events?: Event[] | null }) {
   if (!Array.isArray(events) || events.length === 0)
-    return <p className="text-gray-500 text-center">No hay eventos disponibles</p>;
+    return <p className="text-gray-500 text-center">No hay eventos</p>;
   const [index, setIndex] = useState(0);
   const visible = 4;
 
   if (!events || events.length === 0)
-    return <p className="text-gray-500 text-center">No hay eventos disponibles</p>;
+    return <p className="text-gray-500 text-center">No hay eventos</p>;
 
   const next = () => {
     if (index < events.length - visible) setIndex(index + 1);
