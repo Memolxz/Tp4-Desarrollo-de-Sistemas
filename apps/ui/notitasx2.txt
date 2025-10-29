@@ -1,2 +1,10 @@
-deberia haber un boton para volver al home en iniciar sesion y registrarse
+refinar evento
 en la pagina de evento cuando estas logueado se ve el boton de inscribirse, sino no se ve.
+payment
+
+create event: imagenes
+en home hacer q aparezca el coso d profile cuando estas iniciado sesion
+logout
+refinar tdo
+
+TESTTTTTTT

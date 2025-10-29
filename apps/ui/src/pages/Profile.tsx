@@ -4,11 +4,14 @@ import BasePage from "./BasePage.tsx";
 import VirtualWallet from "../components/VirtualWallet.tsx";
 import { useState, useEffect } from "react";
 import { eventService, type Event } from "../services/event-service";
-import { userService, type User } from "../services/user-service";
+import axios from "axios";
 
-function EventsCarousel({ events }: { events: Event[] }) {
+function EventsCarousel({ events = [] }: { events?: Event[] }) {
   const [index, setIndex] = useState(0);
   const visible = 4;
+
+  if (!events || events.length === 0)
+    return <p className="text-gray-500 text-center">No hay eventos disponibles</p>;
 
   const next = () => {
     if (index < events.length - visible) setIndex(index + 1);
@@ -18,11 +21,8 @@ function EventsCarousel({ events }: { events: Event[] }) {
     if (index > 0) setIndex(index - 1);
   };
 
-  if (events.length === 0) return <p className="text-gray-500 text-center">No hay eventos disponibles</p>;
-
   return (
     <div className="relative w-full">
-      {/* Left Arrow */}
       {index > 0 && (
         <button
           onClick={prev}
@@ -32,7 +32,6 @@ function EventsCarousel({ events }: { events: Event[] }) {
         </button>
       )}
 
-      {/* Visible Container */}
       <div className="overflow-hidden w-full">
         <div
           className="flex transition-transform duration-500 ease-in-out"
@@ -62,7 +61,6 @@ function EventsCarousel({ events }: { events: Event[] }) {
         </div>
       </div>
 
-      {/* Right Arrow */}
       {index < events.length - visible && (
         <button
           onClick={next}
@@ -75,14 +73,19 @@ function EventsCarousel({ events }: { events: Event[] }) {
   );
 }
 
+interface User {
+  id: number;
+  username: string;
+  dni: string;
+  email: string;
+  balance: number;
+  createdAt: string;
+}
+
 export default function Profile() {
   const [user, setUser] = useState<User | null>(null);
-  const [userEvents, setUserEvents] = useState<{ Events: Event[] }>({
-    Events: []
-  });
-  const [userAttendances, setUserAttendances] = useState<{ Attendances: Event[] }>({
-    Attendances: []
-  });
+  const [userEvents, setUserEvents] = useState<Event[]>([]);
+  const [userAttendances, setUserAttendances] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -92,22 +95,31 @@ export default function Profile() {
   const fetchUserData = async () => {
     try {
       setLoading(true);
-      const [userData, eventsData, attendancesData] = await Promise.all([
-        userService.getProfile(),
-        eventService.getUserEvents(),
-        eventService.getUserAttendances()
-      ]);
+      const token = localStorage.getItem("accessToken");
+      if (!token) throw new Error("No hay token guardado");
+
+      const res = await axios.get("http://localhost:8000/users/profile", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const userData = res.data.data;
       setUser(userData);
-      setUserEvents(eventsData);
-      setUserAttendances(attendancesData);
+
+      const [eventsData, attendancesData] = await Promise.all([
+        eventService.getUserEvents(),
+        eventService.getUserAttendances(),
+      ]);
+
+      setUserEvents(eventsData.Events || []);
+      setUserAttendances(attendancesData.Attendances || []);
     } catch (err) {
-      console.error("Error fetching user data:", err);
+      console.error("Error al obtener el perfil:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) {
+  if (loading)
     return (
       <BasePage pageName="profile">
         <div className="flex justify-center items-center min-h-screen bg-dominant">
@@ -118,9 +130,8 @@ export default function Profile() {
         </div>
       </BasePage>
     );
-  }
 
-  if (!user) {
+  if (!user)
     return (
       <BasePage pageName="profile">
         <div className="flex justify-center items-center min-h-screen bg-dominant">
@@ -128,18 +139,21 @@ export default function Profile() {
         </div>
       </BasePage>
     );
-  }
 
   return (
-    <BasePage pageName={"profile"}>
+    <BasePage pageName="profile">
       <div className="flex flex-col justify-center items-center bg-dominant h-full w-full pb-10">
+        {/* Perfil y saldo */}
         <div className="flex flex-row justify-center items-end bg-transparent w-[80%]">
           <div className="flex flex-col justify-start items-start bg-transparent w-2/3">
             <h1 className="mt-10 text-4xl font-bold text-start text-black">Mi Perfil</h1>
             <h2 className="mt-2 w-1/2 text-xl text-start text-black/60">Manejá tus datos y saldo.</h2>
           </div>
           <div className="flex flex-row justify-end items-end bg-transparent w-1/3 h-full mb-4">
-            <Link to="/createevent" className="flex flex-row justify-center items-center bg-accent rounded-2xl h-10 w-48 text-white text-lg font-semibold">
+            <Link
+              to="/createevent"
+              className="flex flex-row justify-center items-center bg-accent rounded-2xl h-10 w-48 text-white text-lg font-semibold"
+            >
               <Plus className="h-6 w-6 mr-2" />
               <p>Crear Evento</p>
             </Link>
@@ -147,44 +161,36 @@ export default function Profile() {
         </div>
 
         <div className="w-[80%] border-b border-gray-300 h-0 my-5 z-10" />
+
         <div className="flex flex-row justify-center items-end bg-transparent w-[80%] mt-5">
-          <div className='w-full flex flex-row mb-10 items-center gap-5'>
-              <div className='bg-accent rounded-full h-20 w-20 text-white flex justify-center items-center'>
-                  <UserRound className='h-12 w-12' strokeWidth={1.5}/>
+          <div className="w-full flex flex-row mb-10 items-center gap-5">
+            <div className="bg-accent rounded-full h-20 w-20 text-white flex justify-center items-center">
+              <UserRound className="h-12 w-12" strokeWidth={1.5} />
+            </div>
+            <div className="flex flex-col">
+              <h2 className="text-4xl font-bold text-accent font-geist">{user.username}</h2>
+              <div className="w-full flex flex-row justify-start items-center">
+                <Mail className="h-4 w-4 text-accent/60 mr-1" />
+                <p className="text-md text-accent/60 font-geist">{user.email}</p>
               </div>
-              <div className='flex flex-col'>
-                  <h2 className="text-4xl font-bold text-accent font-geist">{user.username}</h2>
-                  <div className='w-full flex flex-row justify-start items-center'>
-                      <Mail className="h-4 w-4 text-accent/60 mr-1" />
-                      <p className="text-md text-accent/60 font-geist">{user.email}</p>
-                  </div>
-                  <h3 className="text-md italic text-accent/60 font-geist">DNI: {user.dni}</h3>
-              </div>
+              <h3 className="text-md italic text-accent/60 font-geist">DNI: {user.dni}</h3>
+            </div>
           </div>
-        </div>
-        <VirtualWallet balance={parseFloat(user.balance.toString())} userId={user.id} onBalanceUpdate={fetchUserData} />
-
-        {/* Mis Eventos */}
-        <div className="flex flex-row justify-center items-end bg-transparent w-[80%]">
-          <div className="flex flex-col justify-start items-start bg-transparent w-full">
-            <h1 className="mt-10 text-4xl font-bold text-start text-black">Mis Eventos</h1>
-          </div>
-        </div>
-        <div className="w-[80%] border-b border-gray-300 h-0 my-5 z-10" />
-        <div className="w-[80%]" >
-          <EventsCarousel events={userEvents.Events} />
         </div>
 
-        {/* Mis Inscripciones */}
-        <div className="flex flex-row justify-center items-end bg-transparent w-[80%]">
-          <div className="flex flex-col justify-start items-start bg-transparent w-full">
-            <h1 className="mt-10 text-4xl font-bold text-start text-black">Mis Inscripciones</h1>
-          </div>
-        </div>
+        <VirtualWallet
+          balance={parseFloat(user.balance.toString())}
+          userId={user.id}
+          onBalanceUpdate={fetchUserData}
+        />
+
+        <h1 className="mt-10 text-4xl font-bold text-start text-black w-[80%]">Mis Eventos</h1>
         <div className="w-[80%] border-b border-gray-300 h-0 my-5 z-10" />
-        <div className="w-[80%]" >
-          <EventsCarousel events={userAttendances.Attendances} />
-        </div>
+        <EventsCarousel events={userEvents} />
+
+        <h1 className="mt-10 text-4xl font-bold text-start text-black w-[80%]">Mis Inscripciones</h1>
+        <div className="w-[80%] border-b border-gray-300 h-0 my-5 z-10" />
+        <EventsCarousel events={userAttendances} />
       </div>
     </BasePage>
   );

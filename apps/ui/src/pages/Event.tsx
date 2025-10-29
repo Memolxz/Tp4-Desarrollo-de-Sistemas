@@ -139,11 +139,11 @@ export default function Event() {
             {event.fullDescription}
           </p>
           <p className="text-start text-accent font-normal text-md mt-5">
-            <strong>Ubicación: </strong>
+            <MapPin className="h-5 w-5" strokeWidth={1.5} />
             {event.location}
           </p>
           <p className="text-start text-accent font-normal text-md mt-3">
-            <strong>Fecha: </strong>
+            <Calendar className="h-5 w-5" strokeWidth={1.5} />
             {new Date(event.date || "").toLocaleString("es-AR", {
               dateStyle: "long",
               timeStyle: "short",
