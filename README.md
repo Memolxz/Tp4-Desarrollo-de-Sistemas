@@ -81,13 +81,16 @@ Hay algunos endpoints que tal vez no usamos y debido a que nos quedamos sin tiem
 **Autenticación:**
 - `POST /auth/register` - Registrar usuario
 - `POST /auth/login` - Iniciar sesión
+- `POST /auth/refresh-token` - Renovar accessToken
 
 **Eventos:**
-- `GET /events` - Listar eventos
-- `GET /events/:id` - Detalle de evento
+- `GET /user/my-events` - Listar eventos
+- `GET /user/my-attendances` - Detalle de evento
 - `POST /events` - Crear evento
 - `PUT /events/:id` - Actualizar evento
 - `DELETE /events/:id` - Eliminar evento
+- `GET /events/user/my-events` - Eventos creados por el usuario
+- `GET /events/user/my-attendances` - Eventos a los que asistirá el usuario
 
 **Asistencias:**
 - `POST /attendance/:eventId` - Confirmar asistencia
