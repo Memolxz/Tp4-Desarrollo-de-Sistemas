@@ -104,6 +104,11 @@ Hay algunos endpoints que tal vez no usamos y debido a que nos quedamos sin tiem
 - `POST /purchases` - Comprar entradas
 - `GET /purchases/my-purchases` - Mis compras
 
+**Imágenes:**
+- `POST /:id/image` - Subir imágen
+- `GET /:id/image` - Descargar imágen
+- `DELETE /:id/image` - Eliminar imágen
+
 **Usuarios:**
 - `GET /users/profile` - Perfil del usuario
 - `POST /users/balance` - Modificar balance del usuario

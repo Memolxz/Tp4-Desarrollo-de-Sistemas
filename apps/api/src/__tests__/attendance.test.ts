@@ -20,24 +20,30 @@ describe('Confirmación de Asistencia a Eventos Gratuitos', () => {
   beforeEach(async () => {
     await cleanDatabase();
 
-    // Crear organizador
+    // Crear organizador con email único
     const organizador = {
       username: 'organizador',
-      email: 'organizador@example.com',
+      email: `organizador-${Date.now()}@example.com`,
       dni: '12345678',
       password: 'password123',
     };
     const orgResponse = await request(app).post('/register').send(organizador);
+    
+    expect(orgResponse.status).toBe(201);
+    expect(orgResponse.body.data).toHaveProperty('accessToken');
     organizadorToken = orgResponse.body.data.accessToken;
 
-    // Crear asistente
+    // Crear asistente con email único
     const asistente = {
       username: 'asistente',
-      email: 'asistente@example.com',
+      email: `asistente-${Date.now()}@example.com`,
       dni: '87654321',
       password: 'password123',
     };
     const asisResponse = await request(app).post('/register').send(asistente);
+    
+    expect(asisResponse.status).toBe(201);
+    expect(asisResponse.body.data).toHaveProperty('accessToken');
     asistenteToken = asisResponse.body.data.accessToken;
 
     // Crear evento gratuito
@@ -56,6 +62,8 @@ describe('Confirmación de Asistencia a Eventos Gratuitos', () => {
       .set('Authorization', `Bearer ${organizadorToken}`)
       .send(eventData);
 
+    expect(eventResponse.status).toBe(201);
+    expect(eventResponse.body.data).toHaveProperty('id');
     eventId = eventResponse.body.data.id;
   });
 

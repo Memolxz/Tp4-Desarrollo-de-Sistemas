@@ -23,24 +23,30 @@ describe('Compra de Entradas para Eventos Pagos', () => {
   beforeEach(async () => {
     await cleanDatabase();
 
-    // Crear organizador
+    // Crear organizador con email único
     const organizador = {
       username: 'organizador',
-      email: 'organizador@example.com',
+      email: `organizador-${Date.now()}@example.com`,
       dni: '12345678',
       password: 'password123',
     };
     const orgResponse = await request(app).post('/register').send(organizador);
+    
+    expect(orgResponse.status).toBe(201);
+    expect(orgResponse.body.data).toHaveProperty('accessToken');
     organizadorToken = orgResponse.body.data.accessToken;
 
-    // Crear comprador con saldo suficiente
+    // Crear comprador con saldo suficiente y email único
     const comprador = {
       username: 'comprador',
-      email: 'comprador@example.com',
+      email: `comprador-${Date.now()}@example.com`,
       dni: '87654321',
       password: 'password123',
     };
     const compResponse = await request(app).post('/register').send(comprador);
+    
+    expect(compResponse.status).toBe(201);
+    expect(compResponse.body.data).toHaveProperty('accessToken');
     compradorToken = compResponse.body.data.accessToken;
 
     // Cargar saldo al comprador
@@ -66,6 +72,8 @@ describe('Compra de Entradas para Eventos Pagos', () => {
       .set('Authorization', `Bearer ${organizadorToken}`)
       .send(eventoPago);
 
+    expect(eventResponse.status).toBe(201);
+    expect(eventResponse.body.data).toHaveProperty('id');
     eventoPagoId = eventResponse.body.data.id;
   });
 
@@ -142,10 +150,10 @@ describe('Compra de Entradas para Eventos Pagos', () => {
     });
 
     it('debe rechazar compra con saldo insuficiente', async () => {
-      // Crear usuario con poco saldo
+      // Crear usuario con poco saldo y email único
       const usuarioPobre = {
         username: 'pobre',
-        email: 'pobre@example.com',
+        email: `pobre-${Date.now()}@example.com`,
         dni: '11111111',
         password: 'password123',
       };
