@@ -56,20 +56,15 @@ export default function Event() {
   const checkUserRegistration = async (eventData: Event) => {
     try {
       const eventId = eventData.id;
-      console.log("🔍 Verificando inscripción para evento ID:", eventData.id);
 
       if (eventData.isPaid) {
         const purchases = await purchaseService.getUserPurchases();
-        console.log("Compras del usuario:", purchases);
         const purchase = purchases.find(p => p.eventId === eventData.id);
-        console.log("🎟 Compra encontrada:", purchase);
         setHasPurchase(!!purchase);
         setIsUserRegistered(!!purchase);
       } else {
         const attendances = await eventService.getUserAttendances();
-        console.log("Asistencias del usuario:", attendances);
         const attendance = attendances.find(a => a.id === eventData.id);
-        console.log("Asistencia encontrada:", attendance);
         setIsUserRegistered(!!attendance);
       }
 
